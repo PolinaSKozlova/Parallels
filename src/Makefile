@@ -10,7 +10,13 @@ OBJ_FILES=$(patsubst %.cc,%.o,$(SRCS))
 REPORT_DIR = report
 
 
-all: app_console
+interface: clean
+	clear
+	$(CC) $(CC_FLAGS) interface/interface.cc -o app -g
+	./app
+
+
+all: interface
 
 gauss:
 	$(CC) $(CC_FLAGS) $(MFLAGS) gauss/*.cc  -o gauss
@@ -18,7 +24,7 @@ gauss:
 	./gauss
 
 clean:
-	rm -rf *.o *.gcno *.gcda *.info *.a $(REPORT_DIR) g_tests run *.dSYM *.dot *.gv gauss *.d
+	rm -rf *.o *.gcno *.gcda *.info *.a $(REPORT_DIR) g_tests run *.dSYM *.d
 
 test: 
 	clear
