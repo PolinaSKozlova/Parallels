@@ -37,6 +37,15 @@ class Matrix {
     }
   }
 
+  void PrintMatrix(Matrix& m) const {
+    for (size_t i = 0; i < m.size(); ++i) {
+      for (size_t j = 0; j < m[i].size(); ++j) {
+        std::cout << m[i][j] << " ";
+      }
+      std::cout << std::endl;
+    }
+  }
+
  private:
   std::vector<std::vector<double>> matrix_;
 };
