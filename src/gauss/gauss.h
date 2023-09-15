@@ -12,6 +12,8 @@ class Gauss {
     matrix_.push_back(b);
   };
 
+  void GaussElimination() {}
+
  private:
   Matrix matrix_;
 };
