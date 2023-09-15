@@ -3,17 +3,18 @@
 
 #include <vector>
 
+#include "../matrix/matrix.h"
+
+namespace Parallels {
 class Gauss {
-  using Matrix = std::vector<std::vector<double>>;
-
  public:
-  Gauss() = delete;
-  Gauss(size_t n) : matrix_(n, std::vector<double>(n + 1, 0)) {}
-
-  void FillMatrix(const std::vector<std::vector<double>>& matrix) {}
+  Gauss(Matrix& matrix, std::vector<double>& b) : matrix_(matrix) {
+    matrix_.push_back(b);
+  };
 
  private:
   Matrix matrix_;
 };
+};  // namespace Parallels
 
 #endif  // PARALLELS_GAUSS_H

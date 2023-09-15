@@ -1,7 +1,4 @@
 #include "gauss.h"
+#include "matrix.h"
 
-int main() {
-  Gauss::Matrix m{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-
-  return 0;
-}
+int main() { return 0; }
