@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace Parallels {
+using VVDouble = std::vector<std::vector<double>>;
 
 class Matrix {
  public:
@@ -18,9 +19,11 @@ class Matrix {
     return *this;
   }
 
+  VVDouble& GetMatrix() { return matrix_; }
+
   // to think: may be array?
-  void FillMatrix(const<std::vector<double>>& matrix) {
-    size_t index;
+  void FillMatrix(std::vector<double>& matrix) {
+    int index = 0;
     for (size_t i = 0; i < matrix_.size(); ++i) {
       for (size_t j = 0; j < matrix_[i].size(); ++j) {
         matrix_[i][j] = matrix[index++];
@@ -28,7 +31,13 @@ class Matrix {
     }
   }
 
-  void PrintMatrix() const {
+  void MakeExtendedMatrix(std::vector<double>& vector) {
+    for (size_t i = 0; i < vector.size(); ++i) {
+      matrix_[i].push_back(vector[i]);
+    }
+  }
+
+  void PrintMatrix() {
     for (size_t i = 0; i < matrix_.size(); ++i) {
       for (size_t j = 0; j < matrix_[i].size(); ++j) {
         std::cout << matrix_[i][j] << " ";
@@ -37,17 +46,17 @@ class Matrix {
     }
   }
 
-  void PrintMatrix(Matrix& m) const {
-    for (size_t i = 0; i < m.size(); ++i) {
-      for (size_t j = 0; j < m[i].size(); ++j) {
-        std::cout << m[i][j] << " ";
+  void PrintMatrix(VVDouble& v) const {
+    for (size_t i = 0; i < v.size(); ++i) {
+      for (size_t j = 0; j < v[i].size(); ++j) {
+        std::cout << v[i][j] << " ";
       }
       std::cout << std::endl;
     }
   }
 
  private:
-  std::vector<std::vector<double>> matrix_;
+  VVDouble matrix_;
 };
 };  // namespace Parallels
 

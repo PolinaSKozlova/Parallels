@@ -18,7 +18,7 @@ gauss:
 	./gauss
 
 clean:
-	rm -rf *.o *.gcno *.gcda *.info *.a $(REPORT_DIR) g_tests run *.dSYM *.dot *.gv gauss *.d
+	rm -rf *.o *.gcno *.gcda *.info *.a $(REPORT_DIR) g_tests run *.dSYM   *.d
 
 test: 
 	clear
@@ -57,7 +57,7 @@ clang:
 cppcheck:
 	cppcheck --enable=all --language=c++ --std=c++17 --suppress=missingIncludeSystem gauss/*.cc gauss/*.h console/console.h
 
-run: clean
+run: 
 	clear
 	$(CC) $(CC_FLAGS) gauss/*.cc run.cc -o run -g
 	./run

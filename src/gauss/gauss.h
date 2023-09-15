@@ -8,14 +8,17 @@
 namespace Parallels {
 class Gauss {
  public:
-  Gauss(Matrix& matrix, std::vector<double>& b) : matrix_(matrix) {
-    matrix_.push_back(b);
+  Gauss(Matrix& matrix, std::vector<double>& b) : gauss_matrix_(matrix) {
+    gauss_matrix_.MakeExtendedMatrix(b);
   };
 
-  void GaussElimination() {}
+  void GaussElimination();
+  std::vector<double> GaussBackSubstitution();
+
+  VVDouble& GetGaussMatrix() { return gauss_matrix_.GetMatrix(); }
 
  private:
-  Matrix matrix_;
+  Matrix gauss_matrix_;
 };
 };  // namespace Parallels
 
