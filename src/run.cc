@@ -15,6 +15,7 @@ int main() {
   gauss.GaussElimination();
 
   matrix.PrintMatrix(gauss.GetGaussMatrix());
+  gauss.GaussBackSubstitution();
 
   return 0;
 }
