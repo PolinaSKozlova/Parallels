@@ -44,7 +44,7 @@ class Console {
     if (choise != options_.end()) {
       choise->second();
     } else {
-      std::cout << "Method not found";
+      std::cout << "Method not found\n";
     }
     ClearInput();
   }
