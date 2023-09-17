@@ -32,9 +32,29 @@ std::vector<double> Gauss::GaussBackSubstitution() {
     }
   }
 
-  for (size_t i = 0; i < solution.size(); ++i) {
-    std::cout << solution.at(i) << " ";
-  }
+  // std::cout << "solution: " << std::endl;
+  // for (size_t i = 0; i < solution.size(); ++i) {
+  //   std::cout << solution.at(i) << " ";
+  // }
   return solution;
 };
+
+void Gauss::GaussColumnElimination(int lead_row, int target_row) {
+  double factor = gauss_matrix_.GetMatrix()[lead_row + target_row][lead_row] /
+                  gauss_matrix_.GetMatrix()[lead_row][lead_row];
+  std::cout << "lead_row: " << lead_row << " target_row: " << target_row
+            << std::endl;
+  std::cout << "factor: " << factor << " "
+            << gauss_matrix_.GetMatrix()[lead_row][lead_row] << " "
+            << gauss_matrix_.GetMatrix()[target_row][lead_row] << std::endl;
+  for (size_t j = lead_row; j < gauss_matrix_.GetMatrix().size(); ++j) {
+    std::cout << "j: " << j << std::endl;
+    std::cout << gauss_matrix_.GetMatrix()[target_row][j] << " - "
+              << factor * gauss_matrix_.GetMatrix()[lead_row][j] << std::endl;
+    gauss_matrix_.GetMatrix()[target_row][j] -=
+        factor * gauss_matrix_.GetMatrix()[lead_row][j];
+    std::cout << gauss_matrix_.GetMatrix()[target_row][j] << std::endl;
+  }
+};
+
 };  // namespace Parallels

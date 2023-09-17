@@ -57,7 +57,7 @@ clang:
 cppcheck:
 	cppcheck --enable=all --language=c++ --std=c++17 --suppress=missingIncludeSystem gauss/*.cc gauss/*.h console/console.h
 
-run: 
+run: clean
 	clear
 	$(CC) $(CC_FLAGS) gauss/*.cc run.cc -o run -g
 	./run

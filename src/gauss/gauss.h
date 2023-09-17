@@ -14,6 +14,7 @@ class Gauss {
 
   void GaussElimination();
   std::vector<double> GaussBackSubstitution();
+  void GaussColumnElimination(int lead_row, int target_row);
 
   VVDouble& GetGaussMatrix() { return gauss_matrix_.GetMatrix(); }
 
