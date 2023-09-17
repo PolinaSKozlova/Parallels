@@ -14,15 +14,15 @@ int main() {
   std::vector<double> b = {-11, -3, -1, 5};
   Parallels::Gauss gauss(matrix, b);
 
-  for (int i = 1; i < 4; ++i) {
-    gauss.GaussColumnElimination(0, i);
-  }
-  matrix.PrintMatrix(gauss.GetGaussMatrix());
-  std::cout << "==================================" << std::endl;
-  for (int i = 2; i < 4; ++i) {
-    gauss.GaussColumnElimination(1, i);
+  for (int i = 0; i < 3; ++i) {
+    for(int j = i+1; j < 4; ++j) {
+      std::cout << "i: " << i << " j: " << j << std::endl;
+      gauss.GaussColumnElimination(i, j);
+    }
   }
 
+  matrix.PrintMatrix(gauss.GetGaussMatrix());
+  
   // gauss.GaussBackSubstitution();
 
   return 0;
