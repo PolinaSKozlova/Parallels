@@ -9,9 +9,10 @@ using VVDouble = std::vector<std::vector<double>>;
 
 class Matrix {
  public:
- Matrix() = default;
+  Matrix() = default;
   Matrix(size_t n) : matrix_(n, std::vector<double>(n)), rows_(n), cols_(n) {}
-  Matrix(size_t m, size_t n) : matrix_(m, std::vector<double>(n)), rows_(m), cols_(n) {}
+  Matrix(size_t m, size_t n)
+      : matrix_(m, std::vector<double>(n)), rows_(m), cols_(n) {}
   Matrix(const Matrix& other) : matrix_(other.matrix_) {}
   ~Matrix() = default;
 
@@ -28,7 +29,7 @@ class Matrix {
 
   // to think: may be array?
   void FillMatrix(std::vector<double>& matrix) {
-    int index = 0;
+    int index{};
     for (int i = 0; i < rows_; ++i) {
       for (int j = 0; j < cols_; ++j) {
         matrix_[i][j] = matrix[index++];
@@ -37,12 +38,14 @@ class Matrix {
   }
 
   void MakeExtendedMatrix(std::vector<double>& vector) {
+    ++cols_;
     for (size_t i = 0; i < vector.size(); ++i) {
       matrix_[i].push_back(vector[i]);
     }
   }
 
   void PrintMatrix() {
+    std::cout << "rows " << rows_ << " cols " << cols_ << std::endl;
     for (int i = 0; i < rows_; ++i) {
       for (int j = 0; j < cols_; ++j) {
         std::cout << matrix_[i][j] << " ";
