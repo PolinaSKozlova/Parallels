@@ -13,9 +13,10 @@ class Console {
   const std::map<std::string, std::function<void()>> options_{
       {"ant", std::bind(&Console::OptionAnt, this)},
       {"gauss", std::bind(&Console::OptionGauss, this)},
-      {"winograd", std::bind(&Console::OptionWinograd, this)},
+      {"winograd", std::bind(&Console::OptionWinograd, this)}
       // {"", std::bind(&Console::OptionInput, this)},
-      {"q", std::bind(&Console::OptionExit, this)}};
+      // {"q", std::bind(&Console::OptionExit, this)}
+  };
 
  public:
   Console(const Console&) = delete;
@@ -28,6 +29,7 @@ class Console {
       std::cout << "Enter method: ant, gauss or winograd or q for exit:\n";
       std::cin >> method_name;
     }
+    std::cout << "\nExit\n";
   }
 
   static Console& GetInstance() {
@@ -77,7 +79,7 @@ class Console {
   //   ShowConsole(method);
   // }
 
-  void OptionExit() { std::cout << "\nExit\n"; }
+  // void OptionExit() { std::cout << "\nExit\n"; }
 
   void ClearInput() const {
     std::cin.clear();
