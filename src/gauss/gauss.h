@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <thread>
+#include <mutex>
 
 #include "../matrix/matrix.h"
 
@@ -18,7 +19,7 @@ class Gauss {
 std::vector<double> RunUsualGauss(const Matrix& matrix);
 std::vector<double> RunParallelGauss(const Matrix& matrix);
   void GaussElimination();
-  void GaussMultiThreadedElimination();
+  void GaussMultiThreadedElimination(std::vector<std::thread> &threads);
   std::vector<double> GaussBackSubstitution();
   void GaussEliminateElement(int lead_row, int target_row);
 
@@ -26,6 +27,7 @@ std::vector<double> RunParallelGauss(const Matrix& matrix);
 
  private:
   Matrix gauss_matrix_;
+
 };
 };  // namespace Parallels
 
