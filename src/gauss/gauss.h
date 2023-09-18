@@ -2,6 +2,7 @@
 #define PARALLELS_GAUSS_H
 
 #include <vector>
+#include <thread>
 
 #include "../matrix/matrix.h"
 
@@ -15,7 +16,7 @@ class Gauss {
     Gauss() = default;
 
 std::vector<double> RunUsualGauss(const Matrix& matrix);
-// std::vector<double> RunParallelGauss();
+std::vector<double> RunParallelGauss(const Matrix& matrix);
   void GaussElimination();
   void GaussMultiThreadedElimination();
   std::vector<double> GaussBackSubstitution();
