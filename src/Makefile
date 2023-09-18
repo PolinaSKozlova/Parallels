@@ -24,7 +24,7 @@ gauss:
 	./gauss
 
 clean:
-	rm -rf *.o *.gcno *.gcda *.info *.a $(REPORT_DIR) g_tests run *.dSYM *.d
+	rm -rf *.o *.gcno *.gcda *.info *.a $(REPORT_DIR) g_tests run *.dSYM *.d app
 
 test: 
 	clear
@@ -67,3 +67,6 @@ run: clean
 	clear
 	$(CC) $(CC_FLAGS) gauss/*.cc run.cc -o run -g
 	./run
+
+push:
+	git push origin predevelop
