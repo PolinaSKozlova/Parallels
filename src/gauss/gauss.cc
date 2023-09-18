@@ -4,16 +4,36 @@
 
 namespace Parallels {
 
-void Gauss::GaussElimination() {
-  for (size_t k = 1; k < gauss_matrix_.GetMatrix().size(); ++k) {
-    for (size_t j = k; j < gauss_matrix_.GetMatrix().size(); ++j) {
-      double factor = gauss_matrix_.GetMatrix()[j][k - 1] /
-                      gauss_matrix_.GetMatrix()[k - 1][k - 1];
+// void Gauss::GaussElimination() {
+//   for (size_t k = 1; k < gauss_matrix_.GetMatrix().size(); ++k) {
+//     for (size_t j = k; j < gauss_matrix_.GetMatrix().size(); ++j) {
+//       double factor = gauss_matrix_.GetMatrix()[j][k - 1] /
+//                       gauss_matrix_.GetMatrix()[k - 1][k - 1];
 
-      for (size_t i = 0; i < gauss_matrix_.GetMatrix().size() + 1; ++i) {
-        gauss_matrix_.GetMatrix()[j][i] -=
-            factor * gauss_matrix_.GetMatrix()[k - 1][i];
-      }
+//       for (size_t i = 0; i < gauss_matrix_.GetMatrix().size() + 1; ++i) {
+//         gauss_matrix_.GetMatrix()[j][i] -=
+//             factor * gauss_matrix_.GetMatrix()[k - 1][i];
+//       }
+//     }
+//   }
+// };
+
+std::vector<double> Gauss::RunUsualGauss(const Matrix& matrix) {
+std::vector<double> result(gauss_matrix_.GetMatrix().size());
+gauss_matrix_= matrix;
+GaussElimination();
+result = GaussBackSubstitution();
+  return result;
+}
+
+// void Gauss::GaussMultiThreadedElimination(std::vector<thread> &threads) {
+  
+// };
+
+void Gauss::GaussElimination() {
+  for (int i = 0; i < (int)gauss_matrix_.GetMatrix().size()-1; ++i) {
+    for(int j = i+1; j < 4; ++j) {
+      GaussEliminateElement(i, j);
     }
   }
 };
@@ -32,28 +52,17 @@ std::vector<double> Gauss::GaussBackSubstitution() {
     }
   }
 
-  // std::cout << "solution: " << std::endl;
-  // for (size_t i = 0; i < solution.size(); ++i) {
-  //   std::cout << solution.at(i) << " ";
-  // }
   return solution;
 };
 
-void Gauss::GaussColumnElimination(int lead_row, int target_row) {
+
+
+void Gauss::GaussEliminateElement(int lead_row, int target_row) {
   double factor = gauss_matrix_.GetMatrix()[ target_row][lead_row] /
                   gauss_matrix_.GetMatrix()[lead_row][lead_row];
-  // std::cout << "lead_row: " << lead_row << " target_row: " << target_row
-  //           << std::endl;
-  // std::cout << "factor: " << factor << "\n "
-            // << gauss_matrix_.GetMatrix()[lead_row][lead_row] << " "
-            // << gauss_matrix_.GetMatrix()[target_row][lead_row] << std::endl;
-  for (size_t j = lead_row; j < gauss_matrix_.GetMatrix().size(); ++j) {
-    // std::cout << "j: " << j << std::endl;
-    // std::cout << gauss_matrix_.GetMatrix()[target_row][j] << " - "
-    //           << factor * gauss_matrix_.GetMatrix()[lead_row][j] << std::endl;
+  for (size_t j = lead_row; j <= gauss_matrix_.GetMatrix().size(); ++j) {
     gauss_matrix_.GetMatrix()[target_row][j] -=
         factor * gauss_matrix_.GetMatrix()[lead_row][j];
-    // std::cout << gauss_matrix_.GetMatrix()[target_row][j] << std::endl;
   }
 };
 

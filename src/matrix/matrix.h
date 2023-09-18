@@ -9,6 +9,7 @@ using VVDouble = std::vector<std::vector<double>>;
 
 class Matrix {
  public:
+ Matrix() = default;
   Matrix(size_t n) : matrix_(n, std::vector<double>(n)) {}
   Matrix(size_t m, size_t n) : matrix_(m, std::vector<double>(n)) {}
   Matrix(const Matrix& other) : matrix_(other.matrix_) {}

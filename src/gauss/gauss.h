@@ -8,13 +8,18 @@
 namespace Parallels {
 class Gauss {
  public:
-  Gauss(Matrix& matrix, std::vector<double>& b) : gauss_matrix_(matrix) {
-    gauss_matrix_.MakeExtendedMatrix(b);
-  };
+  // Gauss(Matrix& matrix, std::vector<double>& b) : gauss_matrix_(matrix) {
+  //   // gauss_matrix_.MakeExtendedMatrix(b);
+  // };
+    // Gauss(Matrix& matrix) : gauss_matrix_(matrix) { };
+    Gauss() = default;
 
+std::vector<double> RunUsualGauss(const Matrix& matrix);
+// std::vector<double> RunParallelGauss();
   void GaussElimination();
+  void GaussMultiThreadedElimination();
   std::vector<double> GaussBackSubstitution();
-  void GaussColumnElimination(int lead_row, int target_row);
+  void GaussEliminateElement(int lead_row, int target_row);
 
   VVDouble& GetGaussMatrix() { return gauss_matrix_.GetMatrix(); }
 
