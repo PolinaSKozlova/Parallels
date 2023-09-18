@@ -1,6 +1,7 @@
 #ifndef PARALLELS_CONSOLE_H
 #define PARALLELS_CONSOLE_H
 
+#include <chrono>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -13,10 +14,7 @@ class Console {
   const std::map<std::string, std::function<void()>> options_{
       {"ant", std::bind(&Console::OptionAnt, this)},
       {"gauss", std::bind(&Console::OptionGauss, this)},
-      {"winograd", std::bind(&Console::OptionWinograd, this)}
-      // {"", std::bind(&Console::OptionInput, this)},
-      // {"q", std::bind(&Console::OptionExit, this)}
-  };
+      {"winograd", std::bind(&Console::OptionWinograd, this)}};
 
  public:
   Console(const Console&) = delete;
@@ -72,23 +70,17 @@ class Console {
     // winograd_thread_.Run();
   }
 
-  // void OptionInput() {
-  //   std::string method{};
-  //   std::cout << "Enter method: ant, gauss or winograd or q for exit:\n";
-  //   std::cin >> method;
-  //   ShowConsole(method);
-  // }
-
-  // void OptionExit() { std::cout << "\nExit\n"; }
-
   void ClearInput() const {
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
 
-  //  Ant ant_thread_;
-  //   Gauss gauss_thread_;
-  //   Winograd winograd_thread_;
+  double CountTime(std::function<void()> f) {
+    const auto start{std::chrono::system_clock::now()};
+    f();
+    const auto finish{std::chrono::system_clock::now()};
+    return std::chrono::duration<double>(finish - start).count();
+  }
 };
 
 };  // namespace Parallels
