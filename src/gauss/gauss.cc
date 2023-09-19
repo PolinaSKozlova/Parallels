@@ -72,8 +72,8 @@ std::vector<double> Gauss::GaussBackSubstitution() {
 };
 
 void Gauss::GaussEliminateElement(int lead_row, int target_row) {
-  if(gauss_matrix_.GetMatrix()[0][0] == 0){
-    SwapRows(0);
+  if(gauss_matrix_.GetMatrix()[lead_row][lead_row] == 0){
+    SwapRows(lead_row);
   } 
 
 if (!CheckNull(gauss_matrix_.GetMatrix()[lead_row], target_row)){
