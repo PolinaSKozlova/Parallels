@@ -31,7 +31,6 @@ std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix) {
   size_t thread_number{
       std::min((size_t)(std::thread::hardware_concurrency() - 1),
                (size_t)matrix.GetRows())};
-  std::cout << "Number of threads: " << thread_number << std::endl;
   gauss_matrix_ = matrix;
   std::vector<std::thread> threads;
   threads.reserve(thread_number);
@@ -62,30 +61,18 @@ std::vector<double> Gauss::GaussBackSubstitution() {
   std::vector<double> solution(gauss_matrix_.GetRows());
   std::cout << "solution size " << solution.size() << std::endl;
   for (int i = gauss_matrix_.GetRows() - 1; i >= 0; --i) {
-    // solution.at(i) = gauss_matrix_.GetMatrix()[i][gauss_matrix_.GetRows()] /
-    //                  gauss_matrix_.GetMatrix()[i][i];
     solution[i] = gauss_matrix_.GetMatrix()[i][gauss_matrix_.GetRows()] /
                   gauss_matrix_.GetMatrix()[i][i];
 
     for (int j = gauss_matrix_.GetRows() - 1; j > i; --j) {
-      // solution.at(i) -= gauss_matrix_.GetMatrix()[i][j] * solution.at(j) /
-      //                   gauss_matrix_.GetMatrix()[i][i];
       solution[i] -= gauss_matrix_.GetMatrix()[i][j] * solution.at(j) /
                      gauss_matrix_.GetMatrix()[i][i];
     }
   }
-  std::cout << "solution " << std::endl;
-  for (auto it : solution) {
-    std::cout << it << " ";
-  }
-  std::cout << std::endl;
   return solution;
 };
 
 void Gauss::GaussEliminateElement(int lead_row, int target_row) {
-  // std::cout << "GaussEliminateElement Thread: " <<
-  // std::this_thread::get_id()
-  //           << std::endl;
   double factor = gauss_matrix_.GetMatrix()[target_row][lead_row] /
                   gauss_matrix_.GetMatrix()[lead_row][lead_row];
   for (int j = lead_row; j <= gauss_matrix_.GetRows(); ++j) {
