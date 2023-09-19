@@ -22,10 +22,12 @@ class Gauss {
   void GaussMultiThreadedElimination(std::vector<std::thread>& threads);
   std::vector<double> GaussBackSubstitution();
   void GaussEliminateElement(int lead_row, int target_row);
+  void SwapRows(int lead_row);
 
   VVDouble& GetGaussMatrix() { return gauss_matrix_.GetMatrix(); }
 
  private:
+ bool CheckNull(std::vector <double> & row, int end);
   Matrix gauss_matrix_;
 };
 };  // namespace Parallels

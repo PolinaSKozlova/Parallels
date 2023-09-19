@@ -59,7 +59,6 @@ void Gauss::GaussElimination() {
 
 std::vector<double> Gauss::GaussBackSubstitution() {
   std::vector<double> solution(gauss_matrix_.GetRows());
-  std::cout << "solution size " << solution.size() << std::endl;
   for (int i = gauss_matrix_.GetRows() - 1; i >= 0; --i) {
     solution[i] = gauss_matrix_.GetMatrix()[i][gauss_matrix_.GetRows()] /
                   gauss_matrix_.GetMatrix()[i][i];
@@ -73,12 +72,36 @@ std::vector<double> Gauss::GaussBackSubstitution() {
 };
 
 void Gauss::GaussEliminateElement(int lead_row, int target_row) {
+  if(gauss_matrix_.GetMatrix()[0][0] == 0){
+    SwapRows(0);
+  } 
+
+if (!CheckNull(gauss_matrix_.GetMatrix()[lead_row], target_row)){
   double factor = gauss_matrix_.GetMatrix()[target_row][lead_row] /
                   gauss_matrix_.GetMatrix()[lead_row][lead_row];
   for (int j = lead_row; j <= gauss_matrix_.GetRows(); ++j) {
     gauss_matrix_.GetMatrix()[target_row][j] -=
         factor * gauss_matrix_.GetMatrix()[lead_row][j];
   }
+  }
+
+
 };
+
+bool Gauss::CheckNull(std::vector <double> & row, int end){
+  for(int i= 0; i< end; i++){
+    if(row[i]!=0) return false;
+  }
+  return true;
+}
+
+void Gauss::SwapRows(int lead_row) {
+  int next_row{lead_row} ;
+  while (next_row < gauss_matrix_.GetRows() && gauss_matrix_.GetMatrix()[next_row][lead_row]== 0) {
+    next_row++;
+  }
+  if(next_row >= gauss_matrix_.GetRows()-1) throw std::runtime_error("no solution");
+  std::swap(gauss_matrix_.GetMatrix()[lead_row], gauss_matrix_.GetMatrix()[next_row]);
+}
 
 };  // namespace Parallels
