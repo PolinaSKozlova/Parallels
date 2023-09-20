@@ -20,9 +20,10 @@ namespace Parallels {
 // };
 
 std::vector<double> Gauss::RunUsualGauss(const Matrix& matrix) {
+  
   gauss_matrix_ = matrix;
-  if(gauss_matrix_.CheckZeroRow() != 0 || gauss_matrix_.CheckZeroCol() != 0){
-    throw std::invalid_argument("There is no solution!");}
+  // if(gauss_matrix_.CheckZeroRow() != 0 || gauss_matrix_.CheckZeroCol() != 0){
+  //   throw std::invalid_argument("There is no solution!");}
 
   std::vector<double> result(gauss_matrix_.GetMatrix().size());
   GaussElimination();
@@ -31,22 +32,25 @@ std::vector<double> Gauss::RunUsualGauss(const Matrix& matrix) {
 }
 
 std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix) {
-    gauss_matrix_ = matrix;
-      if(gauss_matrix_.CheckZeroRow() != 0 || gauss_matrix_.CheckZeroCol() != 0){
+  if(matrix.CheckZeroRow()  || matrix.CheckZeroCol() ){
     throw std::invalid_argument("There is no solution!");}
-  size_t thread_number{
-      std::min((size_t)(std::thread::hardware_concurrency() - 1),
-               (size_t)matrix.GetRows())};
-
-  std::vector<std::thread> threads;
-  threads.reserve(thread_number);
-  GaussMultiThreadedElimination(threads);
+  // matrix.PrintMatrix();
+ gauss_matrix_ = matrix;
+  GaussMultiThreadedElimination();
   return GaussBackSubstitution();
 }
 
-void Gauss::GaussMultiThreadedElimination(std::vector<std::thread>& threads) {
+void Gauss::GaussMultiThreadedElimination() {
+   size_t thread_number{
+      std::min((size_t)(std::thread::hardware_concurrency() - 1),
+               (size_t)gauss_matrix_.GetRows())};
+  std::vector<std::thread> threads;
+  threads.reserve(thread_number);
+  std::cout << "Number of threads: " << thread_number << std::endl;
   for (int i = 0; i < gauss_matrix_.GetRows() - 1; ++i) {
     for (int j = i + 1; j < gauss_matrix_.GetRows(); ++j) {
+    //   for (size_t i = 0; i < thread_number - 1; ++i) {
+    // for (size_t j = i + 1; j < thread_number; ++j) {
       threads.emplace_back([i, j, this]() { GaussEliminateElement(i, j); });
     }
   }
@@ -56,11 +60,13 @@ void Gauss::GaussMultiThreadedElimination(std::vector<std::thread>& threads) {
 };
 
 void Gauss::GaussElimination() {
+  mtx_.lock();
   for (int i = 0; i < gauss_matrix_.GetRows() - 1; ++i) {
     for (int j = i + 1; j < gauss_matrix_.GetRows(); ++j) {
       GaussEliminateElement(i, j);
     }
   }
+  mtx_.unlock();
 };
 
 std::vector<double> Gauss::GaussBackSubstitution() {
@@ -78,6 +84,7 @@ std::vector<double> Gauss::GaussBackSubstitution() {
 };
 
 void Gauss::GaussEliminateElement(int lead_row, int target_row) {
+  std::cout << "Thread: " << std::this_thread::get_id() << std::endl;
   if(gauss_matrix_.GetMatrix()[lead_row][lead_row] == 0){
     SwapRows(lead_row);
   } 

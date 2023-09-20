@@ -19,7 +19,7 @@ class Gauss {
   std::vector<double> RunUsualGauss(const Matrix& matrix);
   std::vector<double> RunParallelGauss(const Matrix& matrix);
   void GaussElimination();
-  void GaussMultiThreadedElimination(std::vector<std::thread>& threads);
+  void GaussMultiThreadedElimination();
   std::vector<double> GaussBackSubstitution();
   void GaussEliminateElement(int lead_row, int target_row);
   void SwapRows(int lead_row);
