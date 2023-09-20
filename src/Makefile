@@ -12,7 +12,7 @@ REPORT_DIR = report
 
 interface: clean
 	clear
-	$(CC) $(CC_FLAGS) interface/interface.cc -o app -g
+	$(CC) $(CC_FLAGS) interface/interface.cc gauss/gauss.cc -o app -g
 	./app
 
 
