@@ -7,7 +7,7 @@
 #include <map>
 
 // #include "../gauss/gauss.h"
-// #include "..matrix/matrix.h"
+#include "../matrix/matrix.h"
 
 namespace Parallels {
 class Console {
@@ -56,18 +56,41 @@ class Console {
   }
 
   void OptionAnt() {
-    std::cout << "Ant\n";
+    std::cout << "Ant Method\n";
     // ant_thread_.Run();
   }
 
   void OptionGauss() {
-    std::cout << "Gauss\n";
+    std::cout << "Gauss Method\n";
+    std::cout << "Enter matrix size(rows and cols)\n";
+    try {
+      Matrix matrix = EnterMatrix();
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
+
     // gauss_thread_.Run();
   }
 
   void OptionWinograd() {
-    std::cout << "Winograd\n";
+    std::cout << "Winograd Method\n";
     // winograd_thread_.Run();
+  }
+
+  Matrix EnterMatrix() {
+    int rows{}, cols{};
+    std::cin >> rows >> cols;
+    if (rows < 1 || cols < 1)
+      throw std::invalid_argument("Incorrect matrix size");
+    std::cout << "Enter matrix value\n";
+    Matrix result(rows, cols);
+    for (int i = 0; i < rows; ++i) {
+      for (int j = 0; j < cols; ++j) {
+        std::cin >> result.GetMatrix()[i][j];
+      }
+    }
+    ClearInput();
+    return result;
   }
 
   void ClearInput() const {
