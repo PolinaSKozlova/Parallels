@@ -44,6 +44,43 @@ class Matrix {
     }
   }
 
+  bool CheckZeroRow(){
+    bool zero = false;
+  int i = 0;
+  while (i < rows_) {
+    int counter = 0;
+    for (int j = 0; j < cols_-1; j++) {
+      if (matrix_[i][j] == 0.0) {
+        counter++;
+      }
+      if (counter == cols_-1) {
+        zero = true;
+      }
+    }
+    i++;
+  }
+  return zero;
+  }
+
+  bool CheckZeroCol() {
+  bool zero = false;
+  int j = 0;
+  while (j < cols_) {
+    int counter = 0;
+    for (int i = 0; i < rows_; i++) {
+      if (matrix_[i][j] == 0.0) {
+        counter++;
+      }
+      if (counter == rows_) {
+        zero = true;
+      }
+    }
+    j++;
+  }
+  return zero;
+}
+
+
   void PrintMatrix() {
     std::cout << "rows " << rows_ << " cols " << cols_ << std::endl;
     for (int i = 0; i < rows_; ++i) {

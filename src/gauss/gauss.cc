@@ -20,18 +20,24 @@ namespace Parallels {
 // };
 
 std::vector<double> Gauss::RunUsualGauss(const Matrix& matrix) {
-  std::vector<double> result(gauss_matrix_.GetMatrix().size());
   gauss_matrix_ = matrix;
+  if(gauss_matrix_.CheckZeroRow() != 0 || gauss_matrix_.CheckZeroCol() != 0){
+    throw std::invalid_argument("There is no solution!");}
+
+  std::vector<double> result(gauss_matrix_.GetMatrix().size());
   GaussElimination();
   result = GaussBackSubstitution();
   return result;
 }
 
 std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix) {
+    gauss_matrix_ = matrix;
+      if(gauss_matrix_.CheckZeroRow() != 0 || gauss_matrix_.CheckZeroCol() != 0){
+    throw std::invalid_argument("There is no solution!");}
   size_t thread_number{
       std::min((size_t)(std::thread::hardware_concurrency() - 1),
                (size_t)matrix.GetRows())};
-  gauss_matrix_ = matrix;
+
   std::vector<std::thread> threads;
   threads.reserve(thread_number);
   GaussMultiThreadedElimination(threads);
