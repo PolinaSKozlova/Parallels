@@ -6,7 +6,7 @@
 #include <iostream>
 #include <map>
 
-// #include "../gauss/gauss.h"
+#include "../gauss/gauss.h"
 #include "../matrix/matrix.h"
 
 namespace Parallels {
@@ -50,6 +50,7 @@ class Console {
   }
 
   std::string ToLower(std::string& s) {
+    // s.replace(" ", "");
     std::transform(s.begin(), s.end(), s.begin(),
                    [](unsigned char c) { return std::tolower(c); });
     return s;
@@ -65,6 +66,11 @@ class Console {
     std::cout << "Enter matrix size(rows and cols)\n";
     try {
       Matrix matrix = EnterMatrix();
+      Gauss gauss;
+      std::cout << "Usual Gauss Result\n";
+      PrintResultVector(gauss.RunUsualGauss(matrix));
+      std::cout << "Parallel Gauss Result\n";
+      PrintResultVector(gauss.RunParallelGauss(matrix));
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -103,6 +109,13 @@ class Console {
     f();
     const auto finish{std::chrono::system_clock::now()};
     return std::chrono::duration<double>(finish - start).count();
+  }
+
+  void PrintResultVector(const std::vector<double>& v) {
+    for (auto value : v) {
+      std::cout << value << " ";
+    }
+    std::cout << std::endl;
   }
 };
 
