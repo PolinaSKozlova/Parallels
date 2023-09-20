@@ -44,7 +44,7 @@ class Matrix {
     }
   }
 
-  bool CheckZeroRow() {
+  bool CheckZeroRow() const {
     bool zero = false;
     int i = 0;
     while (i < rows_) {
@@ -62,7 +62,7 @@ class Matrix {
     return zero;
   }
 
-  bool CheckZeroCol() {
+  bool CheckZeroCol() const {
     bool zero = false;
     int j = 0;
     while (j < cols_) {
@@ -80,7 +80,7 @@ class Matrix {
     return zero;
   }
 
-  void PrintMatrix() {
+  void PrintMatrix() const {
     std::cout << "rows " << rows_ << " cols " << cols_ << std::endl;
     for (int i = 0; i < rows_; ++i) {
       for (int j = 0; j < cols_; ++j) {
