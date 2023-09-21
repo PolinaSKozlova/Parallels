@@ -13,8 +13,6 @@ Matrix Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
   CountColumnFactors(b);
   CountResultMatrix(a, b);
   if (IsOddMatrix(a.GetCols())) CountOddRows(a, b);
-  std::cout << "Result matrix:" << std::endl;
-  result_.PrintMatrix();
   return result_;
 }
 
@@ -41,21 +39,23 @@ void Winograd::CountColumnFactors(const Matrix& b) {
 }
 
 void Winograd::CountResultMatrix(const Matrix& a, const Matrix& b) {
-  Parallels::VVDouble r_matrix;
-  AllocateMemory(r_matrix, a.GetRows(), b.GetCols());
+  // Parallels::VVDouble r_matrix;
+  // AllocateMemory(r_matrix, a.GetRows(), b.GetCols());
+  // AllocateMemory(result_.GetMatrix(), a.GetRows(), b.GetCols());
+  AllocateMemory(a.GetRows(), b.GetCols());
   for (int i = 0; i < a.GetRows(); ++i) {
     for (int j = 0; j < b.GetCols(); ++j) {
-      r_matrix[i][j] = -row_factor_[i] - column_factor_[j];
+      result_.GetMatrix()[i][j] = -row_factor_[i] - column_factor_[j];
       for (int k = 0; k < half_size_; ++k) {
-        r_matrix[i][j] =
-            r_matrix[i][j] +
+        result_.GetMatrix()[i][j] =
+            result_.GetMatrix()[i][j] +
             (a.GetMatrix()[i][2 * k] + b.GetMatrix()[2 * k + 1][j]) *
                 (a.GetMatrix()[i][2 * k + 1] + b.GetMatrix()[2 * k][j]);
       }
     }
   }
-  result_.SetRowsAndCols(a.GetRows(), b.GetCols());
-  result_.SetMatrix(r_matrix);
+  // result_.SetRowsAndCols(a.GetRows(), b.GetCols());
+  // result_.SetMatrix(r_matrix);
 }
 
 void Winograd::CountOddRows(const Matrix& a, const Matrix& b) {
@@ -68,11 +68,16 @@ void Winograd::CountOddRows(const Matrix& a, const Matrix& b) {
   }
 }
 
-void Winograd::AllocateMemory(VVDouble& r_matrix, int rows, int cols) const {
-  r_matrix.resize(rows);
-  for (int i = 0; i < rows; ++i) {
-    r_matrix[i].resize(cols);
-  }
+// void Winograd::AllocateMemory(VVDouble& r_matrix, int rows, int cols) {
+//   r_matrix.resize(rows);
+//   for (int i = 0; i < rows; ++i) {
+//     r_matrix[i].resize(cols);
+//   }
+// }
+
+void Winograd::AllocateMemory(int rows, int cols) {
+  Matrix new_matrix(rows, cols);
+  result_ = std::move(new_matrix);
 }
 
 bool Winograd::CheckSize(const int a_cols, const int b_rows) const noexcept {

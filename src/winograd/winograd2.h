@@ -11,6 +11,7 @@ class Winograd {
   explicit Winograd(int rows, int cols);
   ~Winograd() = default;
   Matrix GetResult() const noexcept;
+  Matrix& GetResult() { return result_; }
   Matrix MultiplyMatrices(const Matrix& a, const Matrix& b);
 
  private:
@@ -18,7 +19,7 @@ class Winograd {
   void CountColumnFactors(const Matrix& b);
   void CountResultMatrix(const Matrix& a, const Matrix& b);
   void CountOddRows(const Matrix& a, const Matrix& b);
-  void AllocateMemory(VVDouble& r_matrix, int rows, int cols) const;
+  void AllocateMemory(int rows, int cols);
   bool CheckSize(const int a_cols, const int b_rows) const noexcept;
   bool IsOddMatrix(const int a_cols) const;
   Matrix result_;
