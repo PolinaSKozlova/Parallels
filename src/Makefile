@@ -65,7 +65,12 @@ cppcheck:
 
 run: clean
 	clear
-	$(CC) $(CC_FLAGS) gauss/*.cc run.cc -o run -g
+	$(CC) $(CC_FLAGS) gauss/*.cc  winograd/*.cc run.cc -o run -g
+	./run
+
+main: clean
+	clear
+	$(CC) $(CC_FLAGS) winograd/winograd2.cc main.cc -o run	
 	./run
 
 push:
