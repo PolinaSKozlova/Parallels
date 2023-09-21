@@ -2,22 +2,23 @@
 #define PARALLELS_WINOGRAD_H
 
 #include <vector>
+#include "../matrix/matrix.h"
 
 namespace Parallels {
     class Winograd {
 
     public:
-    Parallels::Matrix MultiplyMatrices(Parallels::Matrix& a, Parallels::Matrix& b);
+    Matrix MultiplyMatrices(Matrix& a, Matrix& b);
 
     private:
-    bool CheckMatrices(Parallels::Matrix& a, Parallels::Matrix& b);
-    std::vector<double> FindRowFactors(Parallels::Matrix& a, int d);
-    std::vector<double> FindColFactors(Parallels::Matrix& b, int d);
-    Parallels::Matrix FindMatrix(Parallels::Matrix& a, Parallels::Matrix& b, double rowFactor, double colFactor, int d);
-    void AddMembers(Parallels::Matrix& a, Parallels::Matrix& b, Parallels::Matrix& result);
+    bool CheckMatrices(Matrix& a, Matrix& b);
+    std::vector<double> FindRowFactors(Matrix& a, int d);
+    std::vector<double> FindColFactors(Matrix& b, int d);
+    Matrix FindMatrix(Matrix& a, Matrix& b, std::vector<double> rowFactor, std::vector<double> colFactor, int d);
+    void AddMembers(Matrix& a, Matrix& b, Matrix& result);
 
         
-    }
+    };
 }; // namespace Parallels
 
 
