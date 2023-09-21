@@ -47,7 +47,6 @@ class Console {
     } else {
       std::cout << "Method not found\n";
     }
-    // ClearInput();
   }
 
   std::string ToLower(std::string& s) {
@@ -126,11 +125,6 @@ class Console {
 
   void CallWinogradUsual() {
     try {
-      // std::cout << "Enter matrix A size(rows and cols)\n";
-      // Matrix matrix_a = EnterMatrix();
-      // std::cout << "Enter matrix B size(rows and cols)\n";
-      // Matrix matrix_b = EnterMatrix();
-      // std::cout << "Usual Winograd Result\n";
       winograd_.MultiplyMatrices(matrix_, matrix_w_).PrintMatrix();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
@@ -139,10 +133,6 @@ class Console {
 
   void CallWinogradParallel() {
     try {
-      // std::cout << "Enter matrix A size(rows and cols)\n";
-      // Matrix matrix_a = EnterMatrix();
-      // std::cout << "Enter matrix B size(rows and cols)\n";
-      // Matrix matrix_b = EnterMatrix();
       std::cout << "Parallel Winograd Result\n";
       winograd_.MultiplyMatrices(matrix_, matrix_w_).PrintMatrix();
     } catch (std::invalid_argument& e) {
