@@ -12,7 +12,7 @@ class Winograd {
   ~Winograd() = default;
   Matrix GetResult() const noexcept;
   Matrix& GetResult() { return result_; }
-  Matrix MultiplyMatrices(const Matrix& a, const Matrix& b);
+  Matrix& MultiplyMatrices(const Matrix& a, const Matrix& b);
 
  private:
   void CountRowFactors(const Matrix& a);

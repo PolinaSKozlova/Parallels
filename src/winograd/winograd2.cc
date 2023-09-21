@@ -5,7 +5,7 @@ Winograd::Winograd(int rows, int cols) : result_(rows, cols) {}
 
 Matrix Winograd::GetResult() const noexcept { return result_; }
 
-Matrix Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
+Matrix& Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
   if (!CheckSize(a.GetCols(), b.GetRows()))
     throw std::invalid_argument("Matrices are not compatible!");
   half_size_ = a.GetCols() / 2;
@@ -39,9 +39,6 @@ void Winograd::CountColumnFactors(const Matrix& b) {
 }
 
 void Winograd::CountResultMatrix(const Matrix& a, const Matrix& b) {
-  // Parallels::VVDouble r_matrix;
-  // AllocateMemory(r_matrix, a.GetRows(), b.GetCols());
-  // AllocateMemory(result_.GetMatrix(), a.GetRows(), b.GetCols());
   AllocateMemory(a.GetRows(), b.GetCols());
   for (int i = 0; i < a.GetRows(); ++i) {
     for (int j = 0; j < b.GetCols(); ++j) {
@@ -54,8 +51,6 @@ void Winograd::CountResultMatrix(const Matrix& a, const Matrix& b) {
       }
     }
   }
-  // result_.SetRowsAndCols(a.GetRows(), b.GetCols());
-  // result_.SetMatrix(r_matrix);
 }
 
 void Winograd::CountOddRows(const Matrix& a, const Matrix& b) {
@@ -67,13 +62,6 @@ void Winograd::CountOddRows(const Matrix& a, const Matrix& b) {
     }
   }
 }
-
-// void Winograd::AllocateMemory(VVDouble& r_matrix, int rows, int cols) {
-//   r_matrix.resize(rows);
-//   for (int i = 0; i < rows; ++i) {
-//     r_matrix[i].resize(cols);
-//   }
-// }
 
 void Winograd::AllocateMemory(int rows, int cols) {
   Matrix new_matrix(rows, cols);
