@@ -14,22 +14,24 @@ class Matrix {
   Matrix(size_t m, size_t n)
       : matrix_(m, std::vector<double>(n)), rows_(m), cols_(n) {}
   Matrix(const Matrix& other) : matrix_(other.matrix_) {}
+  Matrix(Matrix&& other) : matrix_(std::move(other.matrix_)) {}
   ~Matrix() = default;
 
   Matrix& operator=(const Matrix& other) {
     matrix_ = other.matrix_;
     rows_ = other.rows_;
     cols_ = other.cols_;
-    std::cout << "operator=" << std::endl;
-    PrintMatrix();
     return *this;
   }
-  void SetMatrix(VVDouble& other) { matrix_ = other; }
-  void SetRowsAndCols(size_t m, size_t n) {
-    rows_ = m;
-    cols_ = n;
+
+  Matrix& operator=(Matrix&& other) {
+    std::swap(matrix_, other.matrix_);
+    std::swap(rows_, other.rows_);
+    std::swap(cols_, other.cols_);
+    return *this;
   }
 
+  VVDouble& GetMatrix() { return matrix_; }
   VVDouble GetMatrix() const { return matrix_; }
   int GetRows() const noexcept { return rows_; }
   int GetCols() const noexcept { return cols_; }
