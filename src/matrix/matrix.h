@@ -20,10 +20,17 @@ class Matrix {
     matrix_ = other.matrix_;
     rows_ = other.rows_;
     cols_ = other.cols_;
+    std::cout << "operator=" << std::endl;
+    PrintMatrix();
     return *this;
   }
+  void SetMatrix(VVDouble& other) { matrix_ = other; }
+  void SetRowsAndCols(size_t m, size_t n) {
+    rows_ = m;
+    cols_ = n;
+  }
 
-  VVDouble& GetMatrix() { return matrix_; }
+  VVDouble GetMatrix() const { return matrix_; }
   int GetRows() const noexcept { return rows_; }
   int GetCols() const noexcept { return cols_; }
 
@@ -44,42 +51,41 @@ class Matrix {
     }
   }
 
-  bool CheckZeroRow() const{
+  bool CheckZeroRow() const {
     bool zero = false;
-  int i = 0;
-  while (i < rows_) {
-    int counter = 0;
-    for (int j = 0; j < cols_-1; j++) {
-      if (matrix_[i][j] == 0.0) {
-        counter++;
+    int i = 0;
+    while (i < rows_) {
+      int counter = 0;
+      for (int j = 0; j < cols_ - 1; j++) {
+        if (matrix_[i][j] == 0.0) {
+          counter++;
+        }
+        if (counter == cols_ - 1) {
+          zero = true;
+        }
       }
-      if (counter == cols_-1) {
-        zero = true;
-      }
+      i++;
     }
-    i++;
-  }
-  return zero;
+    return zero;
   }
 
   bool CheckZeroCol() const {
-  bool zero = false;
-  int j = 0;
-  while (j < cols_) {
-    int counter = 0;
-    for (int i = 0; i < rows_; i++) {
-      if (matrix_[i][j] == 0.0) {
-        counter++;
+    bool zero = false;
+    int j = 0;
+    while (j < cols_) {
+      int counter = 0;
+      for (int i = 0; i < rows_; i++) {
+        if (matrix_[i][j] == 0.0) {
+          counter++;
+        }
+        if (counter == rows_) {
+          zero = true;
+        }
       }
-      if (counter == rows_) {
-        zero = true;
-      }
+      j++;
     }
-    j++;
+    return zero;
   }
-  return zero;
-}
-
 
   void PrintMatrix() const {
     std::cout << "rows " << rows_ << " cols " << cols_ << std::endl;
