@@ -8,6 +8,7 @@
 
 #include "../gauss/gauss.h"
 #include "../matrix/matrix.h"
+#include "../winograd/winograd2.h"
 
 namespace Parallels {
 class Console {
@@ -71,6 +72,7 @@ class Console {
       PrintResultVector(gauss.RunUsualGauss(matrix));
       std::cout << "Parallel Gauss Result\n";
       PrintResultVector(gauss.RunParallelGauss(matrix));
+      // ClearInput();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -80,6 +82,20 @@ class Console {
 
   void OptionWinograd() {
     std::cout << "Winograd Method\n";
+    try {
+      std::cout << "Enter matrix A size(rows and cols)\n";
+      Matrix matrix_a = EnterMatrix();
+      std::cout << "Enter matrix B size(rows and cols)\n";
+      Matrix matrix_b = EnterMatrix();
+      Winograd winograd;
+      std::cout << "Usual Winograd Result\n";
+      winograd.MultiplyMatrices(matrix_a, matrix_b).PrintMatrix();
+      std::cout << "Parallel Winograd Result\n";
+      // ClearInput();
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
+
     // winograd_thread_.Run();
   }
 
@@ -95,7 +111,7 @@ class Console {
         std::cin >> result.GetMatrix()[i][j];
       }
     }
-    ClearInput();
+    // ClearInput();
     return result;
   }
 
