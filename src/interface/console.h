@@ -28,7 +28,7 @@ class Console {
       std::cout << "Enter method: ant, gauss or winograd or q for exit:\n";
       std::cin >> method_name;
     }
-    std::cout << "\nExit\n";
+    std::cout << "Exit\n";
   }
 
   static Console& GetInstance() {
@@ -47,11 +47,10 @@ class Console {
     } else {
       std::cout << "Method not found\n";
     }
-    ClearInput();
+    // ClearInput();
   }
 
   std::string ToLower(std::string& s) {
-    // s.replace(" ", "");
     std::transform(s.begin(), s.end(), s.begin(),
                    [](unsigned char c) { return std::tolower(c); });
     return s;
@@ -64,34 +63,27 @@ class Console {
 
   void OptionGauss() {
     std::cout << "Gauss Method\n";
-    std::cout << "Enter matrix size(rows and cols)\n";
     try {
-      Matrix matrix = EnterMatrix();
-      Gauss gauss;
-      std::cout << "Usual Gauss Result\n";
-      PrintResultVector(gauss.RunUsualGauss(matrix));
-      std::cout << "Parallel Gauss Result\n";
-      PrintResultVector(gauss.RunParallelGauss(matrix));
-      // ClearInput();
+      std::cout << "Enter matrix size(rows and cols)\n";
+      matrix_ = EnterMatrix();
+      double time = CountTime([this]() { CallGaussUsual(); });
+      std::cout << "Time usual Gauss: " << time << " ms\n";
+      time = CountTime([this]() { CallGaussParallel(); });
+      std::cout << "Time parallel Gauss: " << time << "\n";
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
-
-    // gauss_thread_.Run();
   }
 
   void OptionWinograd() {
     std::cout << "Winograd Method\n";
     try {
       std::cout << "Enter matrix A size(rows and cols)\n";
-      Matrix matrix_a = EnterMatrix();
+      matrix_ = EnterMatrix();
       std::cout << "Enter matrix B size(rows and cols)\n";
-      Matrix matrix_b = EnterMatrix();
-      Winograd winograd;
-      std::cout << "Usual Winograd Result\n";
-      winograd.MultiplyMatrices(matrix_a, matrix_b).PrintMatrix();
-      std::cout << "Parallel Winograd Result\n";
-      // ClearInput();
+      matrix_w_ = EnterMatrix();
+      double time = CountTime([this]() { CallWinogradUsual(); });
+      std::cout << "Time usual Winograd: " << time << " ms\n";
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -111,13 +103,51 @@ class Console {
         std::cin >> result.GetMatrix()[i][j];
       }
     }
-    // ClearInput();
     return result;
   }
 
-  void ClearInput() const {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  void CallGaussUsual() {
+    try {
+      std::cout << "Usual Gauss Result\n";
+      PrintResultVector(gauss_.RunUsualGauss(matrix_));
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
+  }
+
+  void CallGaussParallel() {
+    try {
+      std::cout << "Parallel Gauss Result\n";
+      PrintResultVector(gauss_.RunParallelGauss(matrix_));
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
+  }
+
+  void CallWinogradUsual() {
+    try {
+      // std::cout << "Enter matrix A size(rows and cols)\n";
+      // Matrix matrix_a = EnterMatrix();
+      // std::cout << "Enter matrix B size(rows and cols)\n";
+      // Matrix matrix_b = EnterMatrix();
+      // std::cout << "Usual Winograd Result\n";
+      winograd_.MultiplyMatrices(matrix_, matrix_w_).PrintMatrix();
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
+  }
+
+  void CallWinogradParallel() {
+    try {
+      // std::cout << "Enter matrix A size(rows and cols)\n";
+      // Matrix matrix_a = EnterMatrix();
+      // std::cout << "Enter matrix B size(rows and cols)\n";
+      // Matrix matrix_b = EnterMatrix();
+      std::cout << "Parallel Winograd Result\n";
+      winograd_.MultiplyMatrices(matrix_, matrix_w_).PrintMatrix();
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
   }
 
   double CountTime(std::function<void()> f) {
@@ -133,6 +163,12 @@ class Console {
     }
     std::cout << std::endl;
   }
+
+  // Ant ant;
+  Gauss gauss_;
+  Winograd winograd_;
+  Matrix matrix_;
+  Matrix matrix_w_;
 };
 
 };  // namespace Parallels
