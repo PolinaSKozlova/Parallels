@@ -16,10 +16,14 @@ Matrix Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
   return result_matrix;
 }
 
-// Matrix Winograd::MultiplyMatricesInParallels(const Matrix& a, const Matrix&
-// b) {
-//   return result_;
-// }
+Matrix Winograd::MultiplyMatricesInParallels(const Matrix& a, const Matrix& b) {
+  if (!CheckSize(a.GetCols(), b.GetRows()))
+    throw std::invalid_argument("Matrices are not compatible!");
+  half_size_ = a.GetCols() / 2;
+  Matrix result_matrix(a.GetRows(), b.GetCols());
+
+  return result_matrix;
+}
 
 Matrix Winograd::MultiplyMatricesInConveyor(const Matrix& a, const Matrix& b) {
   half_size_ = a.GetCols() / 2;
