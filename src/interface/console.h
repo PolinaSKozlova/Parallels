@@ -20,7 +20,7 @@ class Console {
  public:
   Console(const Console&) = delete;
   ~Console() = default;
-  void ShowConsole(std::string& method_name) {
+  void ShowConsole(std::string& method_name) const {
     while (method_name != "q") {
       if (!method_name.empty()) {
         DoAlgorithms(method_name);
@@ -39,7 +39,7 @@ class Console {
  private:
   Console() = default;
 
-  void DoAlgorithms(std::string& method_name) {
+  void DoAlgorithms(std::string& method_name) const {
     std::system("clear");
     auto choise = options_.find(ToLower(method_name));
     if (choise != options_.end()) {
@@ -49,7 +49,7 @@ class Console {
     }
   }
 
-  std::string ToLower(std::string& s) {
+  std::string ToLower(std::string& s) const {
     std::transform(s.begin(), s.end(), s.begin(),
                    [](unsigned char c) { return std::tolower(c); });
     return s;
