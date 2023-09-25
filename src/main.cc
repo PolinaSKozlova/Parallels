@@ -15,11 +15,12 @@ int main() {
   b.PrintMatrix();
   Parallels::Winograd w;
   try {
-    Parallels::Matrix res = w.MultiplyMatrices(a, b);
+    // Parallels::Matrix res = w.MultiplyMatrices(a, b);
+    Parallels::Matrix res = w.MultiplyMatricesInConveyor(a, b);
     std::cout << "Matrix res:" << std::endl;
     res.PrintMatrix();
-    std::cout << "getter:" << std::endl;
-    w.GetResult().PrintMatrix();
+    // std::cout << "getter:" << std::endl;
+    // w.GetResult().PrintMatrix();
   } catch (std::invalid_argument &e) {
     std::cout << e.what() << std::endl;
   }
