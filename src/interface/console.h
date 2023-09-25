@@ -83,6 +83,10 @@ class Console {
       matrix_w_ = EnterMatrix();
       double time = CountTime([this]() { CallWinogradUsual(); });
       std::cout << "Time usual Winograd: " << time << " ms\n";
+      // time = CountTime([this]() { CallWinogradParallel(); });
+      // std::cout << "Time Parallel Winograd: " << time << " ms\n";
+      time = CountTime([this]() { CallWinogradConveyor(); });
+      std::cout << "Time Convyer Winograd: " << time << " ms\n";
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -125,6 +129,7 @@ class Console {
 
   void CallWinogradUsual() {
     try {
+      std::cout << "Usual Winograd Result\n";
       winograd_.MultiplyMatrices(matrix_, matrix_w_).PrintMatrix();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
@@ -134,7 +139,16 @@ class Console {
   void CallWinogradParallel() {
     try {
       std::cout << "Parallel Winograd Result\n";
-      winograd_.MultiplyMatrices(matrix_, matrix_w_).PrintMatrix();
+      winograd_.MultiplyMatricesInParallels(matrix_, matrix_w_).PrintMatrix();
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
+  }
+
+  void CallWinogradConveyor() {
+    try {
+      std::cout << "Conveyor Winograd Result\n";
+      winograd_.MultiplyMatricesInConveyor(matrix_, matrix_w_).PrintMatrix();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
