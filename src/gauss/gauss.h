@@ -27,7 +27,7 @@ class Gauss {
   VVDouble& GetGaussMatrix() { return gauss_matrix_.GetMatrix(); }
 
  private:
-  bool CheckNull(std::vector<double>& row, int end);
+  bool CheckNull(const std::vector<double>& row, int end);
   Matrix gauss_matrix_;
 };
 };  // namespace Parallels

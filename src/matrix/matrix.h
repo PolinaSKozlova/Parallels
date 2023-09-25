@@ -10,7 +10,8 @@ using VVDouble = std::vector<std::vector<double>>;
 class Matrix {
  public:
   Matrix() = default;
-  Matrix(size_t n) : matrix_(n, std::vector<double>(n)), rows_(n), cols_(n) {}
+  explicit Matrix(size_t n)
+      : matrix_(n, std::vector<double>(n)), rows_(n), cols_(n) {}
   Matrix(size_t m, size_t n)
       : matrix_(m, std::vector<double>(n)), rows_(m), cols_(n) {}
   Matrix(const Matrix& other) : matrix_(other.matrix_) {}
@@ -37,7 +38,7 @@ class Matrix {
   int GetCols() const noexcept { return cols_; }
 
   // to think: may be array?
-  void FillMatrix(std::vector<double>& matrix) {
+  void FillMatrix(const std::vector<double>& matrix) {
     int index{};
     for (int i = 0; i < rows_; ++i) {
       for (int j = 0; j < cols_; ++j) {

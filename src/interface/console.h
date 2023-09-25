@@ -8,7 +8,7 @@
 
 #include "../gauss/gauss.h"
 #include "../matrix/matrix.h"
-#include "../winograd/winograd2.h"
+#include "../winograd/winograd.h"
 
 namespace Parallels {
 class Console {

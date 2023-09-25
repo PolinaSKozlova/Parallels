@@ -1,83 +1,120 @@
 #include "winograd.h"
-// #include "../matrix/matrix.h"
+
+#include <thread>
 
 namespace Parallels {
-Matrix Winograd::MultiplyMatrices(Matrix& a, Matrix& b) {
-if(!CheckMatrices(a, b)) {
+Matrix Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
+  if (!CheckSize(a.GetCols(), b.GetRows()))
     throw std::invalid_argument("Matrices are not compatible!");
-} 
-    int d = a.GetCols()/2;
-    std::vector<double> rowFactor = FindRowFactors(a, d);
-    std::vector<double> colFactor = FindColFactors(b, d);
-    Matrix result = FindMatrix(a, b, rowFactor, colFactor, d);
-    
-    // if (result.GetRows() % 2 != 0 && result.GetCols() % 2 != 0) {
-    if((a.GetCols()/2)*2 != a.GetCols()) {
-        std::cout << "odd matrix" << std::endl;
-        AddMembers(a, b, result);
-    }
-    return result;
+  half_size_ = a.GetCols() / 2;
+  std::vector<double> row_factor = CountRowFactors(a);
+  std::vector<double> column_factor = CountColumnFactors(b);
+
+  Matrix result_matrix(a.GetRows(), b.GetCols());
+  result_matrix = CountResultMatrix(a, b, row_factor, column_factor);
+  if (IsOddMatrix(a.GetCols())) CountOddRows(a, b, result_matrix);
+  return result_matrix;
 }
 
- bool Winograd::CheckMatrices(Matrix& a, Matrix& b) {
-    if(a.GetCols() != b.GetRows() ) return false;
+Matrix Winograd::MultiplyMatricesInParallels(const Matrix& a, const Matrix& b) {
+  if (!CheckSize(a.GetCols(), b.GetRows()))
+    throw std::invalid_argument("Matrices are not compatible!");
+  half_size_ = a.GetCols() / 2;
+  Matrix result_matrix(a.GetRows(), b.GetCols());
+
+  return result_matrix;
+}
+
+Matrix Winograd::MultiplyMatricesInConveyor(const Matrix& a, const Matrix& b) {
+  half_size_ = a.GetCols() / 2;
+  std::vector<double> row_factor;
+  std::thread row_thread(
+      [&a, &row_factor, this]() { row_factor = CountRowFactors(a); });
+
+  std::vector<double> column_factor;
+  std::thread column_thread(
+      [&b, &column_factor, this]() { column_factor = CountColumnFactors(b); });
+
+  row_thread.join();
+  column_thread.join();
+
+  Matrix result_matrix(a.GetRows(), b.GetCols());
+  std::thread result_thread(
+      [&a, &b, &row_factor, &column_factor, &result_matrix, this]() {
+        result_matrix = CountResultMatrix(a, b, row_factor, column_factor);
+      });
+  result_thread.join();
+
+  if (IsOddMatrix(a.GetCols())) {
+    std::thread odd_tread([&a, &b, &result_matrix, this]() {
+      CountOddRows(a, b, result_matrix);
+    });
+    odd_tread.join();
+  }
+  return result_matrix;
+}
+
+std::vector<double> Winograd::CountRowFactors(const Matrix& a) {
+  std::vector<double> row_factor(a.GetRows());
+  for (int i = 0; i < a.GetRows(); i++) {
+    row_factor[i] = a.GetMatrix()[i][0] * a.GetMatrix()[i][1];
+    for (int j = 1; j < half_size_; ++j) {
+      row_factor[i] =
+          row_factor[i] + a.GetMatrix()[i][2 * j] * a.GetMatrix()[i][2 * j + 1];
+    }
+  }
+  return row_factor;
+}
+
+std::vector<double> Winograd::CountColumnFactors(const Matrix& b) {
+  std::vector<double> column_factor(b.GetRows());
+  for (int i = 0; i < b.GetCols(); i++) {
+    column_factor[i] = b.GetMatrix()[0][i] * b.GetMatrix()[1][i];
+    for (int j = 1; j < half_size_; ++j) {
+      column_factor[i] = column_factor[i] +
+                         b.GetMatrix()[2 * j][i] * b.GetMatrix()[2 * j + 1][i];
+    }
+  }
+  return column_factor;
+}
+
+Matrix Winograd::CountResultMatrix(const Matrix& a, const Matrix& b,
+                                   std::vector<double> row_factor,
+                                   std::vector<double> column_factor) {
+  Matrix result(a.GetRows(), b.GetCols());
+  for (int i = 0; i < a.GetRows(); ++i) {
+    for (int j = 0; j < b.GetCols(); ++j) {
+      result.GetMatrix()[i][j] = -row_factor[i] - column_factor[j];
+      for (int k = 0; k < half_size_; ++k) {
+        result.GetMatrix()[i][j] =
+            result.GetMatrix()[i][j] +
+            (a.GetMatrix()[i][2 * k] + b.GetMatrix()[2 * k + 1][j]) *
+                (a.GetMatrix()[i][2 * k + 1] + b.GetMatrix()[2 * k][j]);
+      }
+    }
+  }
+  return result;
+}
+
+void Winograd::CountOddRows(const Matrix& a, const Matrix& b, Matrix& result) {
+  for (int i = 0; i < a.GetRows(); ++i) {
+    for (int j = 0; j < b.GetCols(); ++j) {
+      result.GetMatrix()[i][j] =
+          result.GetMatrix()[i][j] +
+          a.GetMatrix()[i][a.GetCols() - 1] * b.GetMatrix()[a.GetCols() - 1][j];
+    }
+  }
+}
+
+bool Winograd::CheckSize(const int a_cols, const int b_rows) const noexcept {
+  if (a_cols == b_rows) {
     return true;
- }
+  }
+  return false;
+}
 
-        std::vector<double> Winograd::FindRowFactors(Matrix& a, int d){
-       
-        std::vector<double> row_factors(a.GetRows());
-        for(int i = 0; i < a.GetRows(); i++){
-            row_factors[i] = a.GetMatrix()[i][0]*a.GetMatrix()[i][1];
-            for(int j = 1; j < d; j++){
-                row_factors[i] = row_factors[i] + a.GetMatrix()[i][2*j]*a.GetMatrix()[i][2*j+1];
-            }
-        }
-        return row_factors;
-    }
-
- 
-
-        std::vector<double> Winograd::FindColFactors(Matrix& b,int d){
-         std::vector<double> col_factors(b.GetCols());
-        for(int i = 0; i < b.GetCols(); i++){
-            col_factors[i] = b.GetMatrix()[0][i]*b.GetMatrix()[1][i];
-            for(int j = 1; j < d; j++){
-                col_factors[i] = col_factors[i] + b.GetMatrix()[2*j][i]*b.GetMatrix()[2*j+1][i];
-            }
-        }
-         return col_factors;
-    }
-
-
-
-            Matrix Winograd::FindMatrix(Matrix& a, Matrix& b, 
-    std::vector<double> rowFactor, std::vector<double> colFactor,int d){
-        Matrix result_matrix(a.GetRows(), b.GetCols());
-
-        for(int i = 0; i < a.GetRows(); i++){
-            for(int j = 0; j < b.GetCols(); j++){
-                result_matrix.GetMatrix()[i][j] = -rowFactor[i]-colFactor[j];
-                for(int k = 0; k < d; k++){
-                    result_matrix.GetMatrix()[i][j] = result_matrix.GetMatrix()[i][j]
-                    +(a.GetMatrix()[i][2*k]+b.GetMatrix()[2*k+1][j]) * (a.GetMatrix()[i][2*k+1]+b.GetMatrix()[2*k][j]);    
-                }
-            }
-        }
-        
-        return result_matrix;
-        }
-
-        void Winograd::AddMembers(Matrix& a, Matrix& b, Parallels::Matrix& result){
-        for(int i = 0; i < a.GetRows(); i++){
-            for(int j = 0; j < b.GetCols(); j++){
-                result.GetMatrix()[i][j] = result.GetMatrix()[i][j] 
-                + a.GetMatrix()[i][a.GetCols()-1]*b.GetMatrix()[a.GetCols()-1][j];
-            }
-        }
-    }
-
-
-
-    
-}; // namespace Parallels
+bool Winograd::IsOddMatrix(const int a_cols) const {
+  if (2 * half_size_ == a_cols) return false;
+  return true;
+}
+};  // namespace Parallels

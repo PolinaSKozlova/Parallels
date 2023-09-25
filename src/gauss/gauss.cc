@@ -105,7 +105,7 @@ void Gauss::GaussEliminateElement(int lead_row, int target_row) {
   // mtx_.unlock();
 };
 
-bool Gauss::CheckNull(std::vector<double>& row, int end) {
+bool Gauss::CheckNull(const std::vector<double>& row, int end) {
   for (int i = 0; i < end; i++) {
     if (row[i] != 0) return false;
   }
