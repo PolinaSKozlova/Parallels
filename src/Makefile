@@ -12,7 +12,7 @@ REPORT_DIR = report
 
 interface: clean
 	clear
-	$(CC) $(CC_FLAGS) interface/interface.cc gauss/gauss.cc winograd/winograd2.cc -o app -g
+	$(CC) $(CC_FLAGS) interface/interface.cc gauss/gauss.cc winograd/winograd.cc -o app -g
 	./app
 
 
@@ -61,7 +61,7 @@ clang:
 	clang-format -n --style=Google gauss/*.cc gauss/*.h
 
 cppcheck:
-	cppcheck --enable=all --language=c++ --std=c++17 --suppress=missingIncludeSystem gauss/*.cc gauss/*.h console/console.h
+	cppcheck --enable=all --language=c++ --std=c++17 --suppress=missingIncludeSystem gauss/* console/console.h winograd/*
 
 run: clean
 	clear
