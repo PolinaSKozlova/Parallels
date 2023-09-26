@@ -54,7 +54,7 @@ Matrix Winograd::MultiplyMatricesInConveyor(const Matrix& a, const Matrix& b) {
   return result_matrix;
 }
 
-std::vector<double> Winograd::CountRowFactors(const Matrix& a) {
+std::vector<double> Winograd::CountRowFactors(const Matrix& a) const noexcept {
   std::vector<double> row_factor(a.GetRows());
   for (int i = 0; i < a.GetRows(); i++) {
     row_factor[i] = a.GetMatrix()[i][0] * a.GetMatrix()[i][1];
@@ -66,7 +66,8 @@ std::vector<double> Winograd::CountRowFactors(const Matrix& a) {
   return row_factor;
 }
 
-std::vector<double> Winograd::CountColumnFactors(const Matrix& b) {
+std::vector<double> Winograd::CountColumnFactors(
+    const Matrix& b) const noexcept {
   std::vector<double> column_factor(b.GetRows());
   for (int i = 0; i < b.GetCols(); i++) {
     column_factor[i] = b.GetMatrix()[0][i] * b.GetMatrix()[1][i];
@@ -78,9 +79,9 @@ std::vector<double> Winograd::CountColumnFactors(const Matrix& b) {
   return column_factor;
 }
 
-Matrix Winograd::CountResultMatrix(const Matrix& a, const Matrix& b,
-                                   std::vector<double> row_factor,
-                                   std::vector<double> column_factor) {
+Matrix Winograd::CountResultMatrix(
+    const Matrix& a, const Matrix& b, std::vector<double> row_factor,
+    std::vector<double> column_factor) const noexcept {
   Matrix result(a.GetRows(), b.GetCols());
   for (int i = 0; i < a.GetRows(); ++i) {
     for (int j = 0; j < b.GetCols(); ++j) {
@@ -113,7 +114,7 @@ bool Winograd::CheckSize(const int a_cols, const int b_rows) const noexcept {
   return false;
 }
 
-bool Winograd::IsOddMatrix(const int a_cols) const {
+bool Winograd::IsOddMatrix(const int a_cols) const noexcept {
   if (2 * half_size_ == a_cols) return false;
   return true;
 }
