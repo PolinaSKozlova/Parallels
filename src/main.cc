@@ -16,7 +16,8 @@ int main() {
   Parallels::Winograd w;
   try {
     // Parallels::Matrix res = w.MultiplyMatrices(a, b);
-    Parallels::Matrix res = w.MultiplyMatricesInConveyor(a, b);
+    // Parallels::Matrix res = w.MultiplyMatricesInConveyor(a, b);
+    Parallels::Matrix res = w.MultiplyMatricesInParallels(a, b, 4);
     std::cout << "Matrix res:" << std::endl;
     res.PrintMatrix();
     // std::cout << "getter:" << std::endl;
