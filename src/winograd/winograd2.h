@@ -8,6 +8,10 @@ namespace Parallels {
 class Winograd {
  public:
   Winograd() = default;
+  explicit Winograd(const Matrix& a, const Matrix& b) : a_(a), b_(b) {
+    if (!CheckSize(a.GetCols(), b.GetRows()))
+      throw std::invalid_argument("Matrices are not compatible!");
+  }
   ~Winograd() = default;
   Matrix MultiplyMatrices(const Matrix& a, const Matrix& b);
   Matrix MultiplyMatricesInParallels(const Matrix& a, const Matrix& b,
@@ -15,14 +19,15 @@ class Winograd {
   Matrix MultiplyMatricesInConveyor(const Matrix& a, const Matrix& b);
 
  private:
-  std::vector<double> CountRowFactors(const Matrix& a);
-  std::vector<double> CountColumnFactors(const Matrix& b);
-  void CountResultMatrix(const Matrix& a, const Matrix& b,
-                         Matrix& result_matrix, std::vector<double> row_factor,
+  std::vector<double> CountRowFactors();
+  std::vector<double> CountColumnFactors();
+  void CountResultMatrix(Matrix& result_matrix, std::vector<double> row_factor,
                          std::vector<double> column_factor, int start, int end);
-  void CountOddRows(const Matrix& a, const Matrix& b, Matrix& result);
+  void CountOddRows(Matrix& result, int start, int end);
   bool CheckSize(const int a_cols, const int b_rows) const noexcept;
   bool IsOddMatrix(const int a_cols) const;
+  Matrix a_;
+  Matrix b_;
   int half_size_{};
 };
 };  // namespace Parallels
