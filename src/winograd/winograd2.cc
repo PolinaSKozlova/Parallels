@@ -3,7 +3,7 @@
 #include <thread>
 
 #include "../threads/thread_queue.h"
-#include "../threads/threads_pool2.h"
+#include "../threads/threads_pool.h"
 
 namespace Parallels {
 Matrix Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
@@ -31,16 +31,32 @@ Matrix Winograd::MultiplyMatricesInParallels(const Matrix& a, const Matrix& b,
   Matrix result_matrix(a.GetRows(), b.GetCols());
   ThreadsPool threads_pool(threads_amount);
   for (unsigned int i = 1; i < threads_amount; ++i) {
-    // threads_pool.AddTask([&]() {
-    //   CountResultMatrix(a, b, row_factor, column_factor,
-    //                     (a.GetRows() * (i - 1)) / threads_amount,
-    //                     (a.GetRows() * i) / threads_amount);
+    // threads_pool.AddTask(
+    //     std::move(std::bind(&Winograd::CountResultMatrix, this, std::ref(a),
+    //                         std::ref(b), std::ref(result_matrix), row_factor,
+    //                         column_factor,
+    //                         (a.GetRows() * (i - 1)) / threads_amount,
+    //                         (a.GetRows() * i) / threads_amount))
+    // threads_pool.AddTask(
+    //     std::move([&]() {
+    //       CountResultMatrix(a, b, result_matrix, row_factor, column_factor,
+    //                         (a.GetRows() * (i - 1)) / threads_amount,
+    //                         (a.GetRows() * i) / threads_amount);
+    //     })
     threads_pool.AddVoidTask([&]() {
       CountResultMatrix(a, b, result_matrix, row_factor, column_factor,
                         (a.GetRows() * (i - 1)) / threads_amount,
                         (a.GetRows() * i) / threads_amount);
     });
   }
+
+  // if (IsOddMatrix(a.GetCols())) {
+  //   std::thread odd_tread([&a, &b, &result_matrix, this]() {
+  //     CountOddRows(a, b, result_matrix);
+  //   });
+  //   odd_tread.join();
+  // }
+
   return result_matrix;
 }
 
@@ -65,12 +81,12 @@ Matrix Winograd::MultiplyMatricesInConveyor(const Matrix& a, const Matrix& b) {
       });
   result_thread.join();
 
-  // if (IsOddMatrix(a.GetCols())) {
-  //   std::thread odd_tread([&a, &b, &result_matrix, this]() {
-  //     CountOddRows(a, b, result_matrix);
-  //   });
-  //   odd_tread.join();
-  // }
+  if (IsOddMatrix(a.GetCols())) {
+    std::thread odd_tread([&a, &b, &result_matrix, this]() {
+      CountOddRows(a, b, result_matrix);
+    });
+    odd_tread.join();
+  }
   return result_matrix;
 }
 
@@ -108,10 +124,9 @@ void Winograd::CountResultMatrix(const Matrix& a, const Matrix& b,
     for (int j = 0; j < b.GetCols(); ++j) {
       result_matrix.GetMatrix()[i][j] = -row_factor[i] - column_factor[j];
       for (int k = 0; k < half_size_; ++k) {
-        result_matrix.GetMatrix()[i][j] =
-            result_matrix.GetMatrix()[i][j] +
+        result_matrix.GetMatrix()[i][j] +=
             (a.GetMatrix()[i][2 * k] + b.GetMatrix()[2 * k + 1][j]) *
-                (a.GetMatrix()[i][2 * k + 1] + b.GetMatrix()[2 * k][j]);
+            (a.GetMatrix()[i][2 * k + 1] + b.GetMatrix()[2 * k][j]);
       }
     }
   }
@@ -124,8 +139,7 @@ void Winograd::CountResultMatrix(const Matrix& a, const Matrix& b,
 void Winograd::CountOddRows(const Matrix& a, const Matrix& b, Matrix& result) {
   for (int i = 0; i < a.GetRows(); ++i) {
     for (int j = 0; j < b.GetCols(); ++j) {
-      result.GetMatrix()[i][j] =
-          result.GetMatrix()[i][j] +
+      result.GetMatrix()[i][j] +=
           a.GetMatrix()[i][a.GetCols() - 1] * b.GetMatrix()[a.GetCols() - 1][j];
     }
   }
