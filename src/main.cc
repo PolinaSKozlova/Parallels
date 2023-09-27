@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "winograd/winograd2.h"
+#include "winograd/winograd.h"
 
 int main() {
   Parallels::Matrix a(2, 3);
