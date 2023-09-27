@@ -1,4 +1,4 @@
-#include "winograd2.h"
+#include "winograd.h"
 
 #include <thread>
 
