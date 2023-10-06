@@ -35,13 +35,14 @@ public:
         , _pheromones(pheromones)
         , _alpha(alpha)
         , _beta(beta){
+
         for (int idx = 0; idx < _distances.GetRows(); ++idx) {
             _to_visit.insert(idx);
         }
         _to_visit.erase(position);
         _route.push_back(position);
     }
-
+    
 
 std::vector<std::pair<int, double>> get_available_directions() {
     std::vector<std::pair<int, double>> available_directions;
@@ -198,7 +199,7 @@ double get_route_length()
     if (_route.size() > 1)
     {
         double route_length = 0.0;
-        for (int idx = 0; idx < _route.size() - 1; ++idx)
+        for (int idx = 0; idx < static_cast<int>(_route.size() - 1); ++idx)
         {
             route_length += distances[_route[idx]][_route[idx + 1]];
         }
@@ -221,7 +222,7 @@ std::vector<std::vector<double>> get_pheromone_additive()
     VVDouble additives(n_vertices, std::vector<double>(n_vertices, 0.0));
     const std::vector<int> &route = _route;
 
-    for (int idx = 0; idx < route.size() - 1; ++idx)
+    for (int idx = 0; idx < static_cast<int>(_route.size() - 1); ++idx)
     {
         additives[route[idx]][route[idx + 1]] += additive;
         additives[route[idx + 1]][route[idx]] += additive;

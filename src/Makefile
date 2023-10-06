@@ -54,7 +54,7 @@ leaks:  test
 	CK_FORK=no leaks -atExit -- ./g_tests
 
 .PHONY:
-	all, clean, test, gcov_report, ant, gauss, winograd
+	all, clean, test, gcov_report, ant, gauss, winograd, ant
 
 clang:
 	clang-format -i --style=Google gauss/*.cc gauss/*.h
@@ -71,6 +71,11 @@ run: clean
 main: clean
 	clear
 	$(CC) $(CC_FLAGS) winograd/winograd2.cc main.cc -o run	
+	./run
+
+ant: clean
+	clear
+	$(CC) $(CC_FLAGS) aco/aco.cc ant.cc -o run	
 	./run
 
 push:

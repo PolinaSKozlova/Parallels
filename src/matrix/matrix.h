@@ -14,8 +14,8 @@ class Matrix {
       : matrix_(n, std::vector<double>(n)), rows_(n), cols_(n) {}
   Matrix(size_t m, size_t n)
       : matrix_(m, std::vector<double>(n)), rows_(m), cols_(n) {}
-  Matrix(const Matrix& other) : matrix_(other.matrix_) {}
-  Matrix(Matrix&& other) : matrix_(std::move(other.matrix_)) {}
+  Matrix(const Matrix& other) : matrix_(other.matrix_),rows_(other.rows_), cols_(other.cols_) {}
+  Matrix(Matrix&& other) : matrix_(std::move(other.matrix_)), rows_(std::move(other.rows_)), cols_(std::move(other.cols_)) {}
   ~Matrix() = default;
 
   Matrix& operator=(const Matrix& other) {
