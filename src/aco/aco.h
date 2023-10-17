@@ -194,24 +194,6 @@ class Ant {
 };
 
 class Aco {
-  void InitPheromonMatrix(Matrix &distances, double initial_pheromone) {
-    VVDouble distances_matrix = distances_.GetMatrix();
-    for (int i = 0; i < distances.GetRows(); ++i) {
-      for (int j = 0; j < distances.GetCols(); ++j) {
-        if (distances_matrix[i][j] != 0) {
-          pheromones_.GetMatrix()[i][j] = initial_pheromone;
-        }
-      }
-    }
-  }
-
-  Ant CreateAnt(int startPosition) {
-    Matrix localDistances{distances_};
-    Matrix localPheromones{pheromones_};
-
-    return Ant(startPosition, localDistances, localPheromones, alpha_, beta_);
-  }
-
  public:
   struct AntTourResult {
     std::vector<int> route;
@@ -331,8 +313,7 @@ class Aco {
     int n_epochs_stable = n_epochs_stable_;
     int counter = 1;
     while (n_epochs_max > 0 && n_epochs_stable > 0) {
-      std::cout << "Starting epoch #" << counter << std::endl;
-
+      //   std::cout << "Starting epoch #" << counter << std::endl;
       bool is_it_a_new_route = ExecuteEpoch();
       if (!is_it_a_new_route) {
         --n_epochs_stable;
@@ -363,6 +344,24 @@ class Aco {
   }
 
  private:
+  void InitPheromonMatrix(Matrix &distances, double initial_pheromone) {
+    VVDouble distances_matrix = distances_.GetMatrix();
+    for (int i = 0; i < distances.GetRows(); ++i) {
+      for (int j = 0; j < distances.GetCols(); ++j) {
+        if (distances_matrix[i][j] != 0) {
+          pheromones_.GetMatrix()[i][j] = initial_pheromone;
+        }
+      }
+    }
+  }
+
+  Ant CreateAnt(int startPosition) {
+    Matrix localDistances{distances_};
+    Matrix localPheromones{pheromones_};
+
+    return Ant(startPosition, localDistances, localPheromones, alpha_, beta_);
+  }
+
   Matrix distances_;
   Matrix pheromones_;
   double alpha_;
