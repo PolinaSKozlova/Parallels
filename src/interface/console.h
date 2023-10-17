@@ -6,6 +6,7 @@
 #include <iostream>
 #include <map>
 
+#include "../aco/aco.h"
 #include "../gauss/gauss.h"
 #include "../matrix/matrix.h"
 #include "../winograd/winograd.h"
@@ -56,8 +57,9 @@ class Console {
   }
 
   void OptionAnt() {
+    std::cout << "=============================================\n";
     std::cout << "Ant Method\n";
-    // ant_thread_.Run();
+    std::cout << "=============================================\n";
   }
 
   void OptionGauss() {
