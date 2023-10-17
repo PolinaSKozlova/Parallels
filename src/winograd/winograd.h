@@ -19,6 +19,7 @@ class Winograd {
   Matrix MultiplyMatricesInConveyor(const Matrix& a, const Matrix& b);
 
  private:
+  void SetMatrix(const Matrix& a, const Matrix& b);
   std::vector<double> CountRowFactors();
   std::vector<double> CountColumnFactors();
   void CountResultMatrix(Matrix& result_matrix, std::vector<double> row_factor,
