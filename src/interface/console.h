@@ -60,6 +60,16 @@ class Console {
     std::cout << "=============================================\n";
     std::cout << "Ant Method\n";
     std::cout << "=============================================\n";
+    std::cout << "Enter matrix size\n";
+    int size{};
+    std::cin >> size;
+    matrix_ = EnterMatrix(size);
+    std::cout << "\nEnter amount of iterations\n";
+    std::cin >> iterations_;
+    if (iterations_ < 0)
+      throw std::invalid_argument("Incorrect number of iterations");
+    std::cout << "\n=============================================\n";
+    // aco_.Execute();
   }
 
   void OptionGauss() {
@@ -92,6 +102,8 @@ class Console {
       matrix_w_ = EnterMatrix();
       std::cout << "\nEnter amount of iterations\n";
       std::cin >> iterations_;
+      if (iterations_ < 0)
+        throw std::invalid_argument("Incorrect number of iterations");
       std::cout << "\n=============================================\n";
       double time = CountTime([this]() { CallWinogradUsual(); });
       std::cout << "Time usual Winograd: " << time << " ms\n";
@@ -105,8 +117,6 @@ class Console {
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
-
-    // winograd_thread_.Run();
   }
 
   Matrix EnterMatrix() {
@@ -118,6 +128,18 @@ class Console {
     Matrix result(rows, cols);
     for (int i = 0; i < rows; ++i) {
       for (int j = 0; j < cols; ++j) {
+        std::cin >> result.GetMatrix()[i][j];
+      }
+    }
+    return result;
+  }
+
+  Matrix EnterMatrix(int size) {
+    if (size < 1) throw std::invalid_argument("Incorrect matrix size");
+    std::cout << "Enter matrix value\n";
+    Matrix result(size);
+    for (int i = 0; i < size; ++i) {
+      for (int j = 0; j < size; ++j) {
         std::cin >> result.GetMatrix()[i][j];
       }
     }
@@ -164,7 +186,7 @@ class Console {
   void CallWinogradConveyor() {
     try {
       std::cout << "\t\tConveyor Winograd Result\n";
-      winograd_.MultiplyMatricesInConveyor(matrix_, matrix_w_).PrintMatrix();
+      winograd_.MultiplyMatricesInPipeline(matrix_, matrix_w_).PrintMatrix();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -184,7 +206,7 @@ class Console {
     std::cout << std::endl;
   }
 
-  // Ant ant;
+  // Aco aco_;
   Gauss gauss_;
   Winograd winograd_;
   Matrix matrix_;
