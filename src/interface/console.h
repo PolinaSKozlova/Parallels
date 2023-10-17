@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <map>
 
@@ -81,10 +82,12 @@ class Console {
       matrix_ = EnterMatrix();
       std::cout << "\n=============================================\n";
       time_ = CountTime([this]() { CallGaussUsual(); });
-      std::cout << "Time usual Gauss: " << time_ << " ms\n";
+      std::cout << "Time usual Gauss: " << std::fixed << std::setprecision(6)
+                << time_ << std::defaultfloat << " ms\n";
       std::cout << "=============================================\n";
       time_ = CountTime([this]() { CallGaussParallel(); });
-      std::cout << "Time parallel Gauss: " << time_ << "\n";
+      std::cout << "Time parallel Gauss: " << std::fixed << std::setprecision(6)
+                << time_ << std::defaultfloat << "\n";
       std::cout << "=============================================\n";
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
@@ -106,13 +109,18 @@ class Console {
         throw std::invalid_argument("Incorrect number of iterations");
       std::cout << "\n=============================================\n";
       time_ = CountTime([this]() { CallWinogradUsual(); });
-      std::cout << "Time usual Winograd: " << time_ << " ms\n";
+      std::cout << "Time usual Winograd: " << std::fixed << std::setprecision(6)
+                << time_ << std::defaultfloat << " ms\n";
       std::cout << "=============================================\n";
       time_ = CountTime([this]() { CallWinogradParallel(); });
-      std::cout << "Time Parallel Winograd: " << time_ << " ms\n";
+      std::cout << "Time Parallel Winograd: " << std::fixed
+                << std::setprecision(6) << time_ << std::defaultfloat
+                << " ms\n";
       std::cout << "=============================================\n";
       time_ = CountTime([this]() { CallWinogradPipeline(); });
-      std::cout << "Time Convyer Winograd: " << time_ << " ms\n";
+      std::cout << "Time Convyer Winograd: " << std::fixed
+                << std::setprecision(6) << time_ << std::defaultfloat
+                << " ms\n";
       std::cout << "=============================================\n";
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
@@ -146,6 +154,26 @@ class Console {
     return result;
   }
 
+  void CallAntUsual() {
+    try {
+      std::cout << "\t\tUsual Ant Result\n";
+      // PrintResultVector(aco_ex_.Run(matrix_, iterations_));
+      aco_ex_.Run(matrix_, iterations_);
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
+  }
+
+  void CallAntParallel() {
+    try {
+      std::cout << "\t\tParallel Ant Result\n";
+      // PrintResultVector(aco_.Execute());
+      // aco_ex_.RunParallel(matrix_, iterations_);
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
+  }
+
   void CallGaussUsual() {
     try {
       std::cout << "\t\tUsual Gauss Result\n";
@@ -176,7 +204,10 @@ class Console {
   void CallWinogradParallel() {
     try {
       std::cout << "\t\tParallel Winograd Result\n";
-      winograd_.MultiplyMatricesInParallels(matrix_, matrix_w_, iterations_)
+      int threads{};
+      std::cout << "\nEnter amount of threads\n";
+      std::cin >> threads;
+      winograd_.MultiplyMatricesInParallels(matrix_, matrix_w_, threads)
           .PrintMatrix();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
@@ -194,7 +225,9 @@ class Console {
 
   double CountTime(std::function<void()> f) {
     const auto start{std::chrono::system_clock::now()};
+    // for (int i = 0; i < iterations_; ++i) {
     f();
+    // }
     const auto finish{std::chrono::system_clock::now()};
     return std::chrono::duration<double>(finish - start).count();
   }
@@ -206,7 +239,7 @@ class Console {
     std::cout << std::endl;
   }
 
-  // Aco aco_;
+  AcoExecutor aco_ex_;
   Gauss gauss_;
   Winograd winograd_;
   Matrix matrix_;
