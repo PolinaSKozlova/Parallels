@@ -69,7 +69,7 @@ class Console {
     if (iterations_ < 0)
       throw std::invalid_argument("Incorrect number of iterations");
     std::cout << "\n=============================================\n";
-    // aco_.Execute();
+    // aco_.Execute(matrix_, iterations_);
   }
 
   void OptionGauss() {
@@ -80,11 +80,11 @@ class Console {
       std::cout << "Enter matrix size(rows and cols)\n";
       matrix_ = EnterMatrix();
       std::cout << "\n=============================================\n";
-      double time = CountTime([this]() { CallGaussUsual(); });
-      std::cout << "Time usual Gauss: " << time << " ms\n";
+      time_ = CountTime([this]() { CallGaussUsual(); });
+      std::cout << "Time usual Gauss: " << time_ << " ms\n";
       std::cout << "=============================================\n";
-      time = CountTime([this]() { CallGaussParallel(); });
-      std::cout << "Time parallel Gauss: " << time << "\n";
+      time_ = CountTime([this]() { CallGaussParallel(); });
+      std::cout << "Time parallel Gauss: " << time_ << "\n";
       std::cout << "=============================================\n";
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
@@ -105,14 +105,14 @@ class Console {
       if (iterations_ < 0)
         throw std::invalid_argument("Incorrect number of iterations");
       std::cout << "\n=============================================\n";
-      double time = CountTime([this]() { CallWinogradUsual(); });
-      std::cout << "Time usual Winograd: " << time << " ms\n";
+      time_ = CountTime([this]() { CallWinogradUsual(); });
+      std::cout << "Time usual Winograd: " << time_ << " ms\n";
       std::cout << "=============================================\n";
-      time = CountTime([this]() { CallWinogradParallel(); });
-      std::cout << "Time Parallel Winograd: " << time << " ms\n";
+      time_ = CountTime([this]() { CallWinogradParallel(); });
+      std::cout << "Time Parallel Winograd: " << time_ << " ms\n";
       std::cout << "=============================================\n";
-      time = CountTime([this]() { CallWinogradConveyor(); });
-      std::cout << "Time Convyer Winograd: " << time << " ms\n";
+      time_ = CountTime([this]() { CallWinogradPipeline(); });
+      std::cout << "Time Convyer Winograd: " << time_ << " ms\n";
       std::cout << "=============================================\n";
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
@@ -183,9 +183,9 @@ class Console {
     }
   }
 
-  void CallWinogradConveyor() {
+  void CallWinogradPipeline() {
     try {
-      std::cout << "\t\tConveyor Winograd Result\n";
+      std::cout << "\t\tPipeline Winograd Result\n";
       winograd_.MultiplyMatricesInPipeline(matrix_, matrix_w_).PrintMatrix();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
@@ -212,6 +212,7 @@ class Console {
   Matrix matrix_;
   Matrix matrix_w_;
   int iterations_{};
+  double time_{};
 };
 
 };  // namespace Parallels
