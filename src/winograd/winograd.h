@@ -36,7 +36,7 @@ class WinogradExecutor {
  public:
   WinogradExecutor() = default;
   ~WinogradExecutor() = default;
-  Matrix Run(const Matrix& a, const Matrix& b, const int iterations) {
+  Matrix Run(const Matrix& a, const Matrix& b, const int iterations) const {
     Winograd winograd;
     Matrix result;
     for (int i = 0; i < iterations; ++i) {
@@ -45,7 +45,7 @@ class WinogradExecutor {
     return result;
   }
   Matrix RunParallels(const Matrix& a, const Matrix& b, const int iterations,
-                      unsigned int threads_amount) {
+                      unsigned int threads_amount) const {
     Winograd winograd;
     Matrix result;
     for (int i = 0; i < iterations; ++i) {
@@ -53,7 +53,8 @@ class WinogradExecutor {
     }
     return result;
   }
-  Matrix RunPipeline(const Matrix& a, const Matrix& b, const int iterations) {
+  Matrix RunPipeline(const Matrix& a, const Matrix& b,
+                     const int iterations) const {
     Winograd winograd;
     Matrix result;
     for (int i = 0; i < iterations; ++i) {
