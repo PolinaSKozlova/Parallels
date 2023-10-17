@@ -228,6 +228,32 @@ class Aco {
     InitPheromonMatrix(distances_, initial_pheromone);
   };
 
+  void Execute() {
+    int n_epochs_max = n_epochs_max_;
+    int n_epochs_stable = n_epochs_stable_;
+    int counter = 1;
+    while (n_epochs_max > 0 && n_epochs_stable > 0) {
+      //   std::cout << "Starting epoch #" << counter << std::endl;
+      bool is_it_a_new_route = ExecuteEpoch();
+      if (!is_it_a_new_route) {
+        --n_epochs_stable;
+      } else {
+        n_epochs_stable = n_epochs_stable_;
+      }
+
+      ++counter;
+      --n_epochs_max;
+
+      std::cout << std::boolalpha << is_it_a_new_route << std::endl;
+      std::cout << best_route_length_ << std::endl;
+      for (const auto &vertex : best_route_) {
+        std::cout << vertex << " ";
+      }
+      std::cout << std::endl;
+    }
+  }
+
+ private:
   AntTourResult SendAntToTour(int vertexToStart) {
     Ant ant = CreateAnt(vertexToStart);
     std::vector<int> route = ant.FullTour();
@@ -308,31 +334,6 @@ class Aco {
     return isItANewRoute;
   }
 
-  void Execute() {
-    int n_epochs_max = n_epochs_max_;
-    int n_epochs_stable = n_epochs_stable_;
-    int counter = 1;
-    while (n_epochs_max > 0 && n_epochs_stable > 0) {
-      //   std::cout << "Starting epoch #" << counter << std::endl;
-      bool is_it_a_new_route = ExecuteEpoch();
-      if (!is_it_a_new_route) {
-        --n_epochs_stable;
-      } else {
-        n_epochs_stable = n_epochs_stable_;
-      }
-
-      ++counter;
-      --n_epochs_max;
-
-      std::cout << std::boolalpha << is_it_a_new_route << std::endl;
-      std::cout << best_route_length_ << std::endl;
-      for (const auto &vertex : best_route_) {
-        std::cout << vertex << " ";
-      }
-      std::cout << std::endl;
-    }
-  }
-
   void State() {
     distances_.PrintMatrix();
     pheromones_.PrintMatrix();
@@ -343,7 +344,6 @@ class Aco {
     std::cout << std::endl;
   }
 
- private:
   void InitPheromonMatrix(Matrix &distances, double initial_pheromone) {
     VVDouble distances_matrix = distances_.GetMatrix();
     for (int i = 0; i < distances.GetRows(); ++i) {
