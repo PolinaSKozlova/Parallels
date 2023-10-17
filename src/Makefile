@@ -70,7 +70,7 @@ run: clean
 
 main: clean
 	clear
-	$(CC) $(CC_FLAGS) winograd/winograd2.cc main.cc -o run	
+	$(CC) $(CC_FLAGS) winograd/winograd.cc main.cc -o run	
 	./run
 
 ant: clean
