@@ -28,6 +28,7 @@ class Gauss {
 
  private:
   bool CheckNull(const std::vector<double>& row, int end);
+  bool HasOneSolution(const Matrix& matrix);
   const double kEpsilon = 1e-9;
   Matrix gauss_matrix_;
   std::mutex mutex_;

@@ -107,6 +107,10 @@ bool Gauss::CheckNull(const std::vector<double>& row, int end) {
   return true;
 }
 
+bool Gauss::HasOneSolution(const Matrix& matrix) {
+  return (matrix.GetRows() + 1 == matrix.GetCols());
+}
+
 void Gauss::SwapRows(int lead_row) {
   int next_row{lead_row};
   while (next_row < gauss_matrix_.GetRows() &&
