@@ -21,7 +21,8 @@ namespace Parallels {
 // };
 
 std::vector<double> Gauss::RunUsualGauss(const Matrix& matrix) {
-  if (matrix.CheckZeroRow() || matrix.CheckZeroCol()) {
+  if (matrix.CheckZeroRow() || matrix.CheckZeroCol() ||
+      !HasOneSolution(matrix)) {
     throw std::invalid_argument("There is no solution!");
   }
   gauss_matrix_ = matrix;
@@ -32,7 +33,8 @@ std::vector<double> Gauss::RunUsualGauss(const Matrix& matrix) {
 }
 
 std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix) {
-  if (matrix.CheckZeroRow() || matrix.CheckZeroCol()) {
+  if (matrix.CheckZeroRow() || matrix.CheckZeroCol() ||
+      !HasOneSolution(matrix)) {
     throw std::invalid_argument("There is no solution!");
   }
   gauss_matrix_ = matrix;
