@@ -81,6 +81,7 @@ std::vector<double> Gauss::GaussBackSubstitution() {
 };
 
 void Gauss::GaussEliminateElement(int lead_row, int target_row) {
+  mutex_.lock();
   if (gauss_matrix_.GetMatrix()[lead_row][lead_row] == 0) {
     SwapRows(lead_row);
   }
@@ -91,8 +92,12 @@ void Gauss::GaussEliminateElement(int lead_row, int target_row) {
     for (int j = lead_row; j <= gauss_matrix_.GetRows(); ++j) {
       gauss_matrix_.GetMatrix()[target_row][j] -=
           factor * gauss_matrix_.GetMatrix()[lead_row][j];
+      if (std::abs(gauss_matrix_.GetMatrix()[target_row][j]) < kEpsilon) {
+        gauss_matrix_.GetMatrix()[target_row][j] = 0.0;
+      }
     }
   }
+  mutex_.unlock();
 };
 
 bool Gauss::CheckNull(const std::vector<double>& row, int end) {
