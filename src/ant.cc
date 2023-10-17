@@ -27,36 +27,19 @@ int main()
       30.,
       0.,
   };
-  std::vector<double> in_pheromones = {
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-      0.2,
-  };
 
   distances.FillMatrix(in_distances);
-  pheromones.FillMatrix(in_pheromones);
 
-  Parallels::Aco aco{distances, 0.2, 1.0, 1.0, 0.6, 10, 3};
+  Parallels::AcoExecutor aco_executor;
+  aco_executor.Run(distances, 1000);
+
+  // Parallels::Aco aco{distances, 0.2, 1.0, 1.0, 0.6, 10, 3};
   // aco.State();
   // auto results = aco.SendAntsToTour();
 
   // auto reduced = aco.ReduceTourResults(results);
   // reduced.PrintResult();
-  aco.Execute();
+  // aco.Execute();
   // aco.UpdateState(reduced);
   // aco.State();
   // Parallels::Ant ant{0, distances, pheromones};

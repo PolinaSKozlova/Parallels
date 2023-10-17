@@ -109,7 +109,7 @@ class Ant {
     for (const auto &entry : roulette) {
       if (dice_roll >= entry.second.first && dice_roll < entry.second.second) {
         return entry.first;
-      }
+      } 
     }
     return -1;
   }
@@ -215,8 +215,9 @@ class Aco {
     }
   };
 
-  Aco(Matrix input, double initial_pheromone, double alpha, double beta,
-      double pheromone_leftover, int n_epochs_max, int n_epochs_stable)
+  Aco(Matrix input, double initial_pheromone=0.2, double alpha=1, double beta=1,
+      double pheromone_leftover=0.6, int n_epochs_max=1000, 
+      int n_epochs_stable=30)
       : distances_(input),
         pheromones_(input.GetRows(), input.GetCols()),
         alpha_(alpha),
@@ -244,12 +245,12 @@ class Aco {
       ++counter;
       --n_epochs_max;
 
-      std::cout << std::boolalpha << is_it_a_new_route << std::endl;
-      std::cout << best_route_length_ << std::endl;
-      for (const auto &vertex : best_route_) {
-        std::cout << vertex << " ";
-      }
-      std::cout << std::endl;
+      // std::cout << std::boolalpha << is_it_a_new_route << std::endl;
+      // std::cout << best_route_length_ << std::endl;
+      // for (const auto &vertex : best_route_) {
+      //   std::cout << vertex << " ";
+      // }
+      // std::cout << std::endl;
     }
   }
 
@@ -373,6 +374,18 @@ class Aco {
   double n_epochs_stable_;
 };
 
-};  // namespace Parallels
+
+class AcoExecutor {
+public:
+  AcoExecutor() {}
+  void Run(const Matrix& distances, int execute_iterations) {
+    for (int i = 0; i < execute_iterations; ++i) {
+      std::cout << "Iteration #" << i + 1 << std::endl;
+      Aco aco_instance(distances);
+      aco_instance.Execute();
+    }
+  }
+};
+}; // namespace Parallels
 
 #endif  // PARALLELS_ACO_H
