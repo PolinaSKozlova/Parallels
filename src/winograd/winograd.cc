@@ -44,7 +44,7 @@ Matrix Winograd::MultiplyMatricesInParallels(const Matrix& a, const Matrix& b,
   return result_matrix;
 }
 
-Matrix Winograd::MultiplyMatricesInConveyor(const Matrix& a, const Matrix& b) {
+Matrix Winograd::MultiplyMatricesInPipeline(const Matrix& a, const Matrix& b) {
   if (!CheckSize(a.GetCols(), b.GetRows()))
     throw std::invalid_argument("Matrices are not compatible!");
   SetMatrix(a, b);

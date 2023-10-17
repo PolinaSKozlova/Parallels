@@ -16,7 +16,7 @@ class Winograd {
   Matrix MultiplyMatrices(const Matrix& a, const Matrix& b);
   Matrix MultiplyMatricesInParallels(const Matrix& a, const Matrix& b,
                                      unsigned int threads_amount);
-  Matrix MultiplyMatricesInConveyor(const Matrix& a, const Matrix& b);
+  Matrix MultiplyMatricesInPipeline(const Matrix& a, const Matrix& b);
 
  private:
   void SetMatrix(const Matrix& a, const Matrix& b);
