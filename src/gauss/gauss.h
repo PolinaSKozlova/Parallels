@@ -10,10 +10,6 @@
 namespace Parallels {
 class Gauss {
  public:
-  // Gauss(Matrix& matrix, std::vector<double>& b) : gauss_matrix_(matrix) {
-  //   // gauss_matrix_.MakeExtendedMatrix(b);
-  // };
-  // Gauss(Matrix& matrix) : gauss_matrix_(matrix) { };
   Gauss() = default;
 
   std::vector<double> RunUsualGauss(const Matrix& matrix);
@@ -32,6 +28,28 @@ class Gauss {
   const double kEpsilon = 1e-9;
   Matrix gauss_matrix_;
   std::mutex mutex_;
+};
+
+class GaussExecutor {
+ public:
+  GaussExecutor() = default;
+  ~GaussExecutor() = default;
+  std::vector<double> Run(const Matrix& matrix, const int iterations) {
+    Gauss gauss;
+    std::vector<double> result;
+    for (int i = 0; i < iterations; ++i) {
+      result = gauss.RunUsualGauss(matrix);
+    }
+    return result;
+  }
+  std::vector<double> RunParallel(const Matrix& matrix, const int iterations) {
+    Gauss gauss;
+    std::vector<double> result;
+    for (int i = 0; i < iterations; ++i) {
+      result = gauss.RunParallelGauss(matrix);
+    }
+    return result;
+  }
 };
 };  // namespace Parallels
 

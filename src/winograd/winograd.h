@@ -31,6 +31,37 @@ class Winograd {
   Matrix b_;
   int half_size_{};
 };
+
+class WinogradExecutor {
+ public:
+  WinogradExecutor() = default;
+  ~WinogradExecutor() = default;
+  Matrix Run(const Matrix& a, const Matrix& b, const int iterations) {
+    Winograd winograd;
+    Matrix result;
+    for (int i = 0; i < iterations; ++i) {
+      result = winograd.MultiplyMatrices(a, b);
+    }
+    return result;
+  }
+  Matrix RunParallels(const Matrix& a, const Matrix& b, const int iterations,
+                      unsigned int threads_amount) {
+    Winograd winograd;
+    Matrix result;
+    for (int i = 0; i < iterations; ++i) {
+      result = winograd.MultiplyMatricesInParallels(a, b, threads_amount);
+    }
+    return result;
+  }
+  Matrix RunPipeline(const Matrix& a, const Matrix& b, const int iterations) {
+    Winograd winograd;
+    Matrix result;
+    for (int i = 0; i < iterations; ++i) {
+      result = winograd.MultiplyMatricesInPipeline(a, b);
+    }
+    return result;
+  }
+};
 };  // namespace Parallels
 
 #endif  // PARALLELS_WINOGRAD_H
