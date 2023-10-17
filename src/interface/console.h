@@ -61,36 +61,54 @@ class Console {
     std::cout << "=============================================\n";
     std::cout << "Ant Method\n";
     std::cout << "=============================================\n";
-    std::cout << "Enter matrix size\n";
-    int size{};
-    std::cin >> size;
-    matrix_ = EnterMatrix(size);
-    std::cout << "\nEnter amount of iterations\n";
-    std::cin >> iterations_;
-    if (iterations_ < 0)
-      throw std::invalid_argument("Incorrect number of iterations");
-    std::cout << "\n=============================================\n";
-    // aco_.Execute(matrix_, iterations_);
+    std::string answer{"yes"};
+    while (ToLower(answer) == "yes") {
+      std::cout << "Enter matrix size\n";
+      int size{};
+      std::cin >> size;
+      matrix_ = EnterMatrix(size);
+      std::cout << "\nEnter amount of iterations\n";
+      std::cin >> iterations_;
+      if (iterations_ < 0)
+        throw std::invalid_argument("Incorrect number of iterations");
+      std::cout << "\n=============================================\n";
+      // aco_.Execute(matrix_, iterations_);
+      std::cout << "Do you want to continue? Enter yes or no\n";
+      std::cin >> answer;
+    }
   }
 
   void OptionGauss() {
     std::cout << "=============================================\n";
     std::cout << "\t\tGauss Method\n";
     std::cout << "=============================================\n";
-    try {
-      std::cout << "Enter matrix size(rows and cols)\n";
-      matrix_ = EnterMatrix();
-      std::cout << "\n=============================================\n";
-      time_ = CountTime([this]() { CallGaussUsual(); });
-      std::cout << "Time usual Gauss: " << std::fixed << std::setprecision(6)
-                << time_ << std::defaultfloat << " ms\n";
-      std::cout << "=============================================\n";
-      time_ = CountTime([this]() { CallGaussParallel(); });
-      std::cout << "Time parallel Gauss: " << std::fixed << std::setprecision(6)
-                << time_ << std::defaultfloat << "\n";
-      std::cout << "=============================================\n";
-    } catch (std::invalid_argument& e) {
-      std::cout << e.what() << std::endl;
+    std::string answer{"yes"};
+    while (ToLower(answer) == "yes") {
+      try {
+        std::cout << "Enter matrix size(rows and cols)\n";
+        matrix_ = EnterMatrix();
+        std::cout << "\n=============================================\n";
+        std::cout << "\nEnter amount of iterations\n";
+        std::cin >> iterations_;
+        time_ = CountTime([this]() { CallGaussUsual(); });
+        std::cout << "Time usual Gauss: " << std::fixed << std::setprecision(6)
+                  << time_ << std::defaultfloat << " ms\n";
+        std::cout << "=============================================\n";
+        time_ = CountTime([this]() { CallGaussParallel(); });
+        std::cout << "Time parallel Gauss: " << std::fixed
+                  << std::setprecision(6) << time_ << std::defaultfloat << "\n";
+        std::cout << "=============================================\n";
+      } catch (std::invalid_argument& e) {
+        std::cout << "=============================================\n";
+        std::cout << e.what() << std::endl;
+        std::cout << "=============================================\n";
+      } catch (std::runtime_error& e) {
+        std::cout << "=============================================\n";
+        std::cout << e.what() << std::endl;
+        std::cout << "=============================================\n";
+      }
+      std::cout << "Do you want to continue? Enter yes or no\n";
+      std::cin >> answer;
     }
   }
 
@@ -98,32 +116,40 @@ class Console {
     std::cout << "=============================================\n";
     std::cout << "\t\tWinograd Method\n";
     std::cout << "=============================================\n";
-    try {
-      std::cout << "\nEnter matrix A size(rows and cols)\n";
-      matrix_ = EnterMatrix();
-      std::cout << "\nEnter matrix B size(rows and cols)\n";
-      matrix_w_ = EnterMatrix();
-      std::cout << "\nEnter amount of iterations\n";
-      std::cin >> iterations_;
-      if (iterations_ < 0)
-        throw std::invalid_argument("Incorrect number of iterations");
-      std::cout << "\n=============================================\n";
-      time_ = CountTime([this]() { CallWinogradUsual(); });
-      std::cout << "Time usual Winograd: " << std::fixed << std::setprecision(6)
-                << time_ << std::defaultfloat << " ms\n";
-      std::cout << "=============================================\n";
-      time_ = CountTime([this]() { CallWinogradParallel(); });
-      std::cout << "Time Parallel Winograd: " << std::fixed
-                << std::setprecision(6) << time_ << std::defaultfloat
-                << " ms\n";
-      std::cout << "=============================================\n";
-      time_ = CountTime([this]() { CallWinogradPipeline(); });
-      std::cout << "Time Convyer Winograd: " << std::fixed
-                << std::setprecision(6) << time_ << std::defaultfloat
-                << " ms\n";
-      std::cout << "=============================================\n";
-    } catch (std::invalid_argument& e) {
-      std::cout << e.what() << std::endl;
+    std::string answer{"yes"};
+    while (ToLower(answer) == "yes") {
+      try {
+        std::cout << "\nEnter matrix A size(rows and cols)\n";
+        matrix_ = EnterMatrix();
+        std::cout << "\nEnter matrix B size(rows and cols)\n";
+        matrix_w_ = EnterMatrix();
+        std::cout << "\nEnter amount of iterations\n";
+        std::cin >> iterations_;
+        if (iterations_ < 0)
+          throw std::invalid_argument("Incorrect number of iterations");
+        std::cout << "\n=============================================\n";
+        time_ = CountTime([this]() { CallWinogradUsual(); });
+        std::cout << "Time usual Winograd: " << std::fixed
+                  << std::setprecision(6) << time_ << std::defaultfloat
+                  << " ms\n";
+        std::cout << "=============================================\n";
+        time_ = CountTime([this]() { CallWinogradParallel(); });
+        std::cout << "Time Parallel Winograd: " << std::fixed
+                  << std::setprecision(6) << time_ << std::defaultfloat
+                  << " ms\n";
+        std::cout << "=============================================\n";
+        time_ = CountTime([this]() { CallWinogradPipeline(); });
+        std::cout << "Time Convyer Winograd: " << std::fixed
+                  << std::setprecision(6) << time_ << std::defaultfloat
+                  << " ms\n";
+        std::cout << "=============================================\n";
+      } catch (std::invalid_argument& e) {
+        std::cout << "=============================================\n";
+        std::cout << e.what() << std::endl;
+        std::cout << "=============================================\n";
+      }
+      std::cout << "Do you want to continue? Enter yes or no\n";
+      std::cin >> answer;
     }
   }
 
@@ -177,7 +203,7 @@ class Console {
   void CallGaussUsual() {
     try {
       std::cout << "\t\tUsual Gauss Result\n";
-      PrintResultVector(gauss_.RunUsualGauss(matrix_));
+      PrintResultVector(gauss_.Run(matrix_, iterations_));
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -186,7 +212,7 @@ class Console {
   void CallGaussParallel() {
     try {
       std::cout << "\t\tParallel Gauss Result\n";
-      PrintResultVector(gauss_.RunParallelGauss(matrix_));
+      PrintResultVector(gauss_.RunParallel(matrix_, iterations_));
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -195,7 +221,7 @@ class Console {
   void CallWinogradUsual() {
     try {
       std::cout << "\t\tUsual Winograd Result\n";
-      winograd_.MultiplyMatrices(matrix_, matrix_w_).PrintMatrix();
+      winograd_.Run(matrix_, matrix_w_, iterations_).PrintMatrix();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -207,7 +233,7 @@ class Console {
       int threads{};
       std::cout << "\nEnter amount of threads\n";
       std::cin >> threads;
-      winograd_.MultiplyMatricesInParallels(matrix_, matrix_w_, threads)
+      winograd_.RunParallels(matrix_, matrix_w_, iterations_, threads)
           .PrintMatrix();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
@@ -217,7 +243,7 @@ class Console {
   void CallWinogradPipeline() {
     try {
       std::cout << "\t\tPipeline Winograd Result\n";
-      winograd_.MultiplyMatricesInPipeline(matrix_, matrix_w_).PrintMatrix();
+      winograd_.RunPipeline(matrix_, matrix_w_, iterations_).PrintMatrix();
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -225,9 +251,7 @@ class Console {
 
   double CountTime(std::function<void()> f) {
     const auto start{std::chrono::system_clock::now()};
-    // for (int i = 0; i < iterations_; ++i) {
     f();
-    // }
     const auto finish{std::chrono::system_clock::now()};
     return std::chrono::duration<double>(finish - start).count();
   }
@@ -240,8 +264,8 @@ class Console {
   }
 
   AcoExecutor aco_ex_;
-  Gauss gauss_;
-  Winograd winograd_;
+  GaussExecutor gauss_;
+  WinogradExecutor winograd_;
   Matrix matrix_;
   Matrix matrix_w_;
   int iterations_{};
