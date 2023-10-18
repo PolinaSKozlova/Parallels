@@ -9,7 +9,8 @@ Matrix Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
   if (!CheckSize(a_.GetCols(), b_.GetRows()))
     throw std::invalid_argument("Matrices are not compatible!");
   if (b.GetRows() == 1)
-    throw std::invalid_argument("Algorithm does not support 1xn matrices!");
+    throw std::invalid_argument(
+        "Algorithm does not support one row or one column matrices!");
   SetMatrix(a, b);
   std::vector<double> row_factor = CountRowFactors();
   std::vector<double> column_factor = CountColumnFactors();
