@@ -43,22 +43,43 @@ std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix) {
 }
 
 void Gauss::GaussMultiThreadedElimination() {
-  size_t thread_number{
-      std::min((size_t)(std::thread::hardware_concurrency() - 1),
-               (size_t)gauss_matrix_.GetRows())};
-  std::vector<std::thread> threads;
-  threads.reserve(thread_number);
-  for (int i = 0; i < gauss_matrix_.GetRows() - 1; ++i) {
-    for (int j = i + 1; j < gauss_matrix_.GetRows(); ++j) {
-      //   for (size_t i = 0; i < thread_number - 1; ++i) {
-      // for (size_t j = i + 1; j < thread_number; ++j) {
-      threads.emplace_back([i, j, this]() { GaussEliminateElement(i, j); });
+   unsigned  int thread_number{
+      std::min((std::thread::hardware_concurrency() - 1),
+               (unsigned  int)gauss_matrix_.GetRows())};
+  std::vector<std::thread> threads(thread_number);
+
+  // size_t all_rows = (gauss_matrix_.GetRows() * (gauss_matrix_.GetRows() -1))/2;
+  int i = 0;
+  while(i < gauss_matrix_.GetRows()-1){ 
+    int j = i+1;
+    while( j < gauss_matrix_.GetRows()) {
+   size_t t = 0;
+  //  if(all_rows < thread_number) {
+  //   threads.resize(all_rows);
+  //   } 
+  //   if(all_rows == 0) {
+  //   threads.resize(1);
+  //   }
+    for( ; t < thread_number &&  j < gauss_matrix_.GetRows(); ++t, ++j) {
+      
+    threads.at(t) = std::move(std::thread([i, j, this]() { GaussEliminateElement(i, j); }));
+   
+    // std::cout << "thread id " <<t  << " - "<< threads.at(t).get_id() << std::endl;
+    // if(t < thread_number-1)
+    //   {  
+    //      ++j; }
+      } 
+      // all_rows -=t;
+      t = 0;
+ 
+    for (auto& th : threads) {
+      if (th.joinable()) th.join();
     }
   }
-  for (auto& th : threads) {
-    th.join();
+  ++i;
   }
 };
+
 
 void Gauss::GaussElimination() {
   for (int i = 0; i < gauss_matrix_.GetRows() - 1; ++i) {
