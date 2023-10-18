@@ -42,9 +42,7 @@ class WinogradExecutor {
     Matrix result;
     for (int i = 0; i < iterations; ++i) {
       result = winograd.MultiplyMatrices(a, b);
-      std::cout << "for\n";
     }
-
     return result;
   }
   Matrix RunParallels(const Matrix& a, const Matrix& b, const int iterations,

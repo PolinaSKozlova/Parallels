@@ -8,8 +8,9 @@ namespace Parallels {
 Matrix Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
   if (!CheckSize(a_.GetCols(), b_.GetRows()))
     throw std::invalid_argument("Matrices are not compatible!");
+  if (b.GetRows() == 1)
+    throw std::invalid_argument("Algorithm does not support 1xn matrices!");
   SetMatrix(a, b);
-
   std::vector<double> row_factor = CountRowFactors();
   std::vector<double> column_factor = CountColumnFactors();
 
@@ -17,7 +18,6 @@ Matrix Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
 
   CountResultMatrix(result_matrix, row_factor, column_factor, 0,
                     result_matrix.GetRows());
-  // result_matrix_ = result_matrix;
   return result_matrix;
 }
 
@@ -90,10 +90,8 @@ void Winograd::SetMatrix(const Matrix& a, const Matrix& b) {
 
 std::vector<double> Winograd::CountRowFactors() {
   std::vector<double> row_factor(a_.GetRows());
-  // std::vector<double> row_factor;
   for (int i = 0; i < a_.GetRows(); i++) {
     row_factor[i] = a_.GetMatrix()[i][0] * a_.GetMatrix()[i][1];
-    // row_factor.push_back(a_.GetMatrix()[i][0] * a_.GetMatrix()[i][1]);
     for (int j = 1; j < half_size_; ++j) {
       row_factor[i] = row_factor[i] +
                       a_.GetMatrix()[i][2 * j] * a_.GetMatrix()[i][2 * j + 1];
