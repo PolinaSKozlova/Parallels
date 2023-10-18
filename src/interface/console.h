@@ -63,24 +63,36 @@ class Console {
     std::cout << "=============================================\n";
     std::string answer{"yes"};
     while (ToLower(answer) == "yes") {
-      std::cout << "Enter matrix size\n";
-      int size{};
-      std::cin >> size;
-      matrix_ = EnterMatrix(size);
-      std::cout << "\nEnter amount of iterations\n";
-      int iterations{};
-      std::cin >> iterations;
-      if (iterations_ < 0)
-        throw std::invalid_argument("Incorrect number of iterations");
-      std::cout << "\n=============================================\n";
-      time_ = CountTime([this, iterations](int) { CallAntUsual(iterations); },
-                        iterations);
-      std::cout << "\n=============================================\n";
-      time_ = CountTime(
-          [this, iterations](int) { CallAntParallel(iterations); }, iterations);
-      std::cout << "\n=============================================\n";
-      std::cout << "Do you want to continue? Enter yes or no\n";
-      std::cin >> answer;
+      try {
+        std::cout << "Enter matrix size\n";
+        int size{};
+        std::cin >> size;
+        ClearInput();
+        matrix_ = EnterMatrix(size);
+        std::cout << "\nEnter amount of iterations\n";
+        int iterations{};
+        std::cin >> iterations;
+        if (iterations_ < 0)
+          throw std::invalid_argument("Incorrect number of iterations");
+        std::cout << "\n=============================================\n";
+        time_ = CountTime([this, iterations](int) { CallAntUsual(iterations); },
+                          iterations);
+        std::cout << "Ant usual: " << std::fixed << std::setprecision(6)
+                  << time_ << std::defaultfloat << "\n";
+        std::cout << "\n=============================================\n";
+        time_ =
+            CountTime([this, iterations](int) { CallAntParallel(iterations); },
+                      iterations);
+        std::cout << "Ant parallel: " << std::fixed << std::setprecision(6)
+                  << time_ << std::defaultfloat << "\n";
+        std::cout << "\n=============================================\n";
+        std::cout << "Do you want to continue? Enter yes or no\n";
+        std::cin >> answer;
+      } catch (std::invalid_argument& e) {
+        std::cout << "=============================================\n";
+        std::cout << e.what() << std::endl;
+        std::cout << "=============================================\n";
+      }
     }
   }
 
@@ -176,6 +188,7 @@ class Console {
   Matrix EnterMatrix() {
     int rows{}, cols{};
     std::cin >> rows >> cols;
+    ClearInput();
     if (rows < 1 || cols < 1)
       throw std::invalid_argument("Incorrect matrix size");
     std::cout << "Enter matrix value\n";
@@ -185,6 +198,7 @@ class Console {
         std::cin >> result.GetMatrix()[i][j];
       }
     }
+    ClearInput();
     return result;
   }
 
@@ -197,6 +211,7 @@ class Console {
         std::cin >> result.GetMatrix()[i][j];
       }
     }
+    ClearInput();
     return result;
   }
 
@@ -208,7 +223,6 @@ class Console {
       std::cout << "Best path: ";
       PrintResultVector(result.first);
       std::cout << "Distance length: " << result.second << std::endl;
-      aco_ex_.Run(matrix_, iterations_);
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -222,7 +236,6 @@ class Console {
       std::cout << "Best path: ";
       PrintResultVector(result.first);
       std::cout << "Distance length: " << result.second << std::endl;
-      aco_ex_.Run(matrix_, iterations_);
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -260,9 +273,6 @@ class Console {
   void CallWinogradParallel(const int iterations) {
     try {
       std::cout << "\t\tParallel Winograd Result\n";
-      // int threads{};
-      // std::cout << "\nEnter amount of threads\n";
-      // std::cin >> threads;
       winograd_.RunParallels(matrix_, matrix_w_, iterations, threads_)
           .PrintMatrix();
     } catch (std::invalid_argument& e) {
@@ -284,6 +294,11 @@ class Console {
     f(iterations);
     const auto finish{std::chrono::system_clock::now()};
     return std::chrono::duration<double>(finish - start).count();
+  }
+
+  void ClearInput() const {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
 
   void PrintResultVector(const std::vector<double>& v) {
