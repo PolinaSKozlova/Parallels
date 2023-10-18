@@ -23,9 +23,11 @@ class Matrix {
   ~Matrix() = default;
 
   Matrix& operator=(const Matrix& other) {
-    matrix_ = other.matrix_;
-    rows_ = other.rows_;
-    cols_ = other.cols_;
+    if (*this != other) {
+      matrix_ = other.matrix_;
+      rows_ = other.rows_;
+      cols_ = other.cols_;
+    }
     return *this;
   }
 
@@ -35,6 +37,20 @@ class Matrix {
     std::swap(cols_, other.cols_);
     return *this;
   }
+
+  bool operator==(const Matrix& other) const noexcept {
+    if (rows_ != other.rows_ || cols_ != other.cols_) return false;
+    for (int i = 0; i < rows_; ++i) {
+      for (int j = 0; j < cols_; ++j) {
+        if (matrix_[i][j] != other.matrix_[i][j]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  bool operator!=(const Matrix& other) { return !(*this == other); }
 
   VVDouble& GetMatrix() { return matrix_; }
   VVDouble GetMatrix() const { return matrix_; }
