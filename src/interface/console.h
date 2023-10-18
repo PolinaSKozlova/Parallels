@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <regex>
 
 #include "../aco/aco.h"
 #include "../gauss/gauss.h"
@@ -27,7 +28,9 @@ class Console {
       if (!method_name.empty()) {
         DoAlgorithms(method_name);
       }
-      std::cout << "Enter method: ant, gauss or winograd or q for exit:\n";
+      std::cout << "\n======================================================\n";
+      std::cout << "Enter method: ant, gauss or winograd or q for exit:";
+      std::cout << "\n======================================================\n";
       std::cin >> method_name;
     }
     std::cout << "Exit\n";
@@ -58,11 +61,9 @@ class Console {
   }
 
   void OptionAnt() {
-    std::cout << "=============================================\n";
-    std::cout << "Ant Method\n";
-    std::cout << "=============================================\n";
+    ShowMethodName("Ant Method");
     std::string answer{"yes"};
-    while (ToLower(answer) == "yes") {
+    while (std::regex_match(ToLower(answer), std::regex("yes|y"))) {
       try {
         std::cout << "Enter matrix size\n";
         int size{};
@@ -77,31 +78,27 @@ class Console {
         std::cout << "\n=============================================\n";
         time_ = CountTime([this, iterations](int) { CallAntUsual(iterations); },
                           iterations);
-        std::cout << "Ant usual: " << std::fixed << std::setprecision(6)
-                  << time_ << std::defaultfloat << "\n";
+        ShowTime("Ant usual: ");
         std::cout << "\n=============================================\n";
         time_ =
             CountTime([this, iterations](int) { CallAntParallel(iterations); },
                       iterations);
-        std::cout << "Ant parallel: " << std::fixed << std::setprecision(6)
-                  << time_ << std::defaultfloat << "\n";
-        std::cout << "\n=============================================\n";
-        std::cout << "Do you want to continue? Enter yes or no\n";
-        std::cin >> answer;
+        ShowTime("Ant parallel: ");
       } catch (std::invalid_argument& e) {
         std::cout << "=============================================\n";
         std::cout << e.what() << std::endl;
         std::cout << "=============================================\n";
       }
+      std::cout << "\n=============================================\n";
+      std::cout << "Do you want to continue? Enter yes or no\n";
+      std::cin >> answer;
     }
   }
 
   void OptionGauss() {
-    std::cout << "=============================================\n";
-    std::cout << "\t\tGauss Method\n";
-    std::cout << "=============================================\n";
+    ShowMethodName("Gauss Method");
     std::string answer{"yes"};
-    while (ToLower(answer) == "yes") {
+    while (std::regex_match(ToLower(answer), std::regex("yes|y"))) {
       try {
         std::cout << "Enter matrix size(rows and cols)\n";
         matrix_ = EnterMatrix();
@@ -112,35 +109,26 @@ class Console {
         time_ =
             CountTime([this, iterations](int) { CallGaussUsual(iterations); },
                       iterations);
-        std::cout << "Time usual Gauss: " << std::fixed << std::setprecision(6)
-                  << time_ << std::defaultfloat << " ms\n";
-        std::cout << "=============================================\n";
+        ShowTime("Time usual Gauss: ");
         time_ = CountTime(
             [this, iterations](int) { CallGaussParallel(iterations); },
             iterations);
-        std::cout << "Time parallel Gauss: " << std::fixed
-                  << std::setprecision(6) << time_ << std::defaultfloat << "\n";
-        std::cout << "=============================================\n";
-      } catch (std::invalid_argument& e) {
-        std::cout << "=============================================\n";
-        std::cout << e.what() << std::endl;
-        std::cout << "=============================================\n";
-      } catch (std::runtime_error& e) {
+        ShowTime("Time parallel Gauss: ");
+      } catch (std::exception& e) {
         std::cout << "=============================================\n";
         std::cout << e.what() << std::endl;
         std::cout << "=============================================\n";
       }
+      std::cout << "\n=============================================\n";
       std::cout << "Do you want to continue? Enter yes or no\n";
       std::cin >> answer;
     }
   }
 
   void OptionWinograd() {
-    std::cout << "=============================================\n";
-    std::cout << "\t\tWinograd Method\n";
-    std::cout << "=============================================\n";
+    ShowMethodName("Winograd Method");
     std::string answer{"yes"};
-    while (ToLower(answer) == "yes") {
+    while (std::regex_match(ToLower(answer), std::regex("yes|y"))) {
       try {
         std::cout << "\nEnter matrix A size(rows and cols)\n";
         matrix_ = EnterMatrix();
@@ -157,24 +145,15 @@ class Console {
         time_ = CountTime(
             [this, iterations](int) { CallWinogradUsual(iterations); },
             iterations);
-        std::cout << "Time usual Winograd: " << std::fixed
-                  << std::setprecision(6) << time_ << std::defaultfloat
-                  << " ms\n";
-        std::cout << "=============================================\n";
+        ShowTime("Time usual Winograd: ");
         time_ = CountTime(
             [this, iterations](int) { CallWinogradParallel(iterations); },
             iterations);
-        std::cout << "Time Parallel Winograd: " << std::fixed
-                  << std::setprecision(6) << time_ << std::defaultfloat
-                  << " ms\n";
-        std::cout << "=============================================\n";
+        ShowTime("Time parallel Winograd: ");
         time_ = CountTime(
             [this, iterations](int) { CallWinogradPipeline(iterations); },
             iterations);
-        std::cout << "Time Convyer Winograd: " << std::fixed
-                  << std::setprecision(6) << time_ << std::defaultfloat
-                  << " ms\n";
-        std::cout << "=============================================\n";
+        ShowTime("Time Convyer Winograd: ");
       } catch (std::invalid_argument& e) {
         std::cout << "=============================================\n";
         std::cout << e.what() << std::endl;
@@ -301,14 +280,27 @@ class Console {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
 
-  void PrintResultVector(const std::vector<double>& v) {
+  void ShowMethodName(const std::string& method_name) const {
+    std::cout << "=============================================\n";
+    std::cout << "\t\t" << method_name << "\n";
+    std::cout << "=============================================\n";
+  }
+
+  void ShowTime(const std::string& message) const {
+    std::cout << "\n=============================================\n";
+    std::cout << message << std::fixed << std::setprecision(6) << time_
+              << std::defaultfloat << "\n";
+    std::cout << "\n=============================================\n";
+  }
+
+  void PrintResultVector(const std::vector<double>& v) const {
     for (auto value : v) {
       std::cout << value << " ";
     }
     std::cout << std::endl;
   }
 
-  void PrintResultVector(const std::vector<int>& v) {
+  void PrintResultVector(const std::vector<int>& v) const {
     for (auto value : v) {
       std::cout << value << " ";
     }
