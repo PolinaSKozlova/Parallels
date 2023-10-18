@@ -6,6 +6,8 @@
 #include <random>
 #include <set>
 #include <vector>
+#include <thread>
+#include <mutex>
 
 #include "../matrix/matrix.h"
 
@@ -217,7 +219,7 @@ class Aco {
 
   Aco(Matrix input, double initial_pheromone=0.2, double alpha=1, double beta=1,
       double pheromone_leftover=0.6, int n_epochs_max=1000, 
-      int n_epochs_stable=30)
+      int n_epochs_stable=50)
       : distances_(input),
         pheromones_(input.GetRows(), input.GetCols()),
         alpha_(alpha),
@@ -228,14 +230,21 @@ class Aco {
         n_epochs_stable_(n_epochs_stable) {
     InitPheromonMatrix(distances_, initial_pheromone);
   };
+  std::vector<int> GetRoute() {
+    return best_route_;
+  }
 
-  void Execute() {
+  double GetRouteLength() {
+    return best_route_length_;
+  }
+
+  void Execute(bool in_parallel = false) {
     int n_epochs_max = n_epochs_max_;
     int n_epochs_stable = n_epochs_stable_;
     int counter = 1;
     while (n_epochs_max > 0 && n_epochs_stable > 0) {
       //   std::cout << "Starting epoch #" << counter << std::endl;
-      bool is_it_a_new_route = ExecuteEpoch();
+      bool is_it_a_new_route = ExecuteEpoch(in_parallel);
       if (!is_it_a_new_route) {
         --n_epochs_stable;
       } else {
@@ -280,6 +289,61 @@ class Aco {
 
     return results;
   }
+
+//   std::vector<AntTourResult> SendAntsToTourParallel() {
+//     int nAnts = distances_.GetRows();
+//     std::vector<AntTourResult> results(nAnts);
+//     std::vector<std::thread> threads;
+//     std::mutex mutex;
+
+//     for (int idx = 0; idx < nAnts; ++idx) {
+//         threads.emplace_back([&, idx]() {
+//             AntTourResult result = SendAntToTour(idx);
+//             std::lock_guard<std::mutex> lock(mutex);
+//             results[idx] = result;
+//         });
+//     }
+
+//     for (auto& t : threads) {
+//         t.join();
+//     }
+
+//     return results;
+// }
+
+
+// threads number defined
+  std::vector<AntTourResult> SendAntsToTourParallel() {
+    int nAnts = distances_.GetRows();
+    std::vector<AntTourResult> results(nAnts);
+    std::mutex mutex;
+
+    unsigned  int thread_number = 
+      std::min((std::thread::hardware_concurrency() - 1),
+               (unsigned int)nAnts);
+
+    std::vector<std::thread> threads(thread_number);
+int idx = 0;
+while (idx < nAnts) {
+  size_t t = 0;
+    for (; t < thread_number && idx < nAnts; ++idx, ++t) {
+
+      threads.at(t) = std::move(std::thread([&, idx]() {
+            AntTourResult result = SendAntToTour(idx);
+            std::lock_guard<std::mutex> lock(mutex);
+            results[idx] = result;
+        }));
+        
+    }   for (auto& th : threads) {
+       if (th.joinable()) th.join();
+    }
+    t = 0;
+}
+ 
+
+    return results;
+}
+
 
   AntTourResult ReduceTourResults(const std::vector<AntTourResult> &results) {
     std::vector<std::vector<double>> additive = results[0].additive;
@@ -327,8 +391,13 @@ class Aco {
     return isItANewRoute;
   }
 
-  bool ExecuteEpoch() {
-    std::vector<AntTourResult> results = SendAntsToTour();
+  bool ExecuteEpoch(bool in_parallel = false) {
+    std::vector<AntTourResult> results;
+    if (in_parallel) {
+      results = SendAntsToTourParallel();
+    } else {
+      results = SendAntsToTour();
+    }
     AntTourResult reducedResult = ReduceTourResults(results);
     bool isItANewRoute = UpdateState(reducedResult);
 
@@ -378,12 +447,29 @@ class Aco {
 class AcoExecutor {
 public:
   AcoExecutor() {}
-  void Run(const Matrix& distances, int execute_iterations) {
+  std::pair<std::vector<int>, double> Run(const Matrix& distances, 
+          int execute_iterations, 
+          bool in_parallel = false) {
+    std::vector<int> best_route;
+    double best_route_length = 0.0;
     for (int i = 0; i < execute_iterations; ++i) {
-      std::cout << "Iteration #" << i + 1 << std::endl;
+      if ((i+1) % 1 == 0) {
+        // std::cout << "Iteration #" << i + 1 << std::endl;
+      }
       Aco aco_instance(distances);
-      aco_instance.Execute();
+      aco_instance.Execute(in_parallel);
+      if (i == execute_iterations - 1) {
+        best_route = aco_instance.GetRoute();
+        best_route_length = aco_instance.GetRouteLength();
+      }
     }
+    return std::make_pair(best_route, best_route_length);
+  }
+  std::pair<std::vector<int>, double> RunSequential(const Matrix& distances, int execute_iterations) {
+    return Run(distances, execute_iterations);
+  }
+  std::pair<std::vector<int>, double> RunParallel(const Matrix& distances, int execute_iterations) {
+    return Run(distances, execute_iterations, true);
   }
 };
 }; // namespace Parallels
