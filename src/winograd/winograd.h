@@ -23,8 +23,9 @@ class Winograd {
   std::vector<double> CountRowFactors();
   std::vector<double> CountColumnFactors();
   void CountResultMatrix(Matrix& result_matrix, std::vector<double> row_factor,
-                         std::vector<double> column_factor, int start, int end);
-  void CountOddRows(Matrix& result, int start, int end);
+                         std::vector<double> column_factor, const int start,
+                         const int end) const;
+  void CountOddRows(Matrix& result, const int start, const int end) const;
   bool CheckSize(const int a_cols, const int b_rows) const noexcept;
   bool IsOddMatrix(const int a_cols) const;
   Matrix a_;
@@ -41,7 +42,9 @@ class WinogradExecutor {
     Matrix result;
     for (int i = 0; i < iterations; ++i) {
       result = winograd.MultiplyMatrices(a, b);
+      std::cout << "for\n";
     }
+
     return result;
   }
   Matrix RunParallels(const Matrix& a, const Matrix& b, const int iterations,

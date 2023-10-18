@@ -14,8 +14,10 @@ Matrix Winograd::MultiplyMatrices(const Matrix& a, const Matrix& b) {
   std::vector<double> column_factor = CountColumnFactors();
 
   Matrix result_matrix(a_.GetRows(), b_.GetCols());
+
   CountResultMatrix(result_matrix, row_factor, column_factor, 0,
                     result_matrix.GetRows());
+  // result_matrix_ = result_matrix;
   return result_matrix;
 }
 
@@ -88,8 +90,10 @@ void Winograd::SetMatrix(const Matrix& a, const Matrix& b) {
 
 std::vector<double> Winograd::CountRowFactors() {
   std::vector<double> row_factor(a_.GetRows());
+  // std::vector<double> row_factor;
   for (int i = 0; i < a_.GetRows(); i++) {
     row_factor[i] = a_.GetMatrix()[i][0] * a_.GetMatrix()[i][1];
+    // row_factor.push_back(a_.GetMatrix()[i][0] * a_.GetMatrix()[i][1]);
     for (int j = 1; j < half_size_; ++j) {
       row_factor[i] = row_factor[i] +
                       a_.GetMatrix()[i][2 * j] * a_.GetMatrix()[i][2 * j + 1];
@@ -99,7 +103,7 @@ std::vector<double> Winograd::CountRowFactors() {
 }
 
 std::vector<double> Winograd::CountColumnFactors() {
-  std::vector<double> column_factor(b_.GetRows());
+  std::vector<double> column_factor(b_.GetCols());
   for (int i = 0; i < b_.GetCols(); i++) {
     column_factor[i] = b_.GetMatrix()[0][i] * b_.GetMatrix()[1][i];
     for (int j = 1; j < half_size_; ++j) {
@@ -112,8 +116,8 @@ std::vector<double> Winograd::CountColumnFactors() {
 
 void Winograd::CountResultMatrix(Matrix& result_matrix,
                                  std::vector<double> row_factor,
-                                 std::vector<double> column_factor, int start,
-                                 int end) {
+                                 std::vector<double> column_factor,
+                                 const int start, const int end) const {
   for (int i = start; i < end; ++i) {
     for (int j = 0; j < b_.GetCols(); ++j) {
       result_matrix.GetMatrix()[i][j] = -row_factor[i] - column_factor[j];
@@ -124,13 +128,13 @@ void Winograd::CountResultMatrix(Matrix& result_matrix,
       }
     }
   }
-
   if (IsOddMatrix(a_.GetCols())) {
     CountOddRows(result_matrix, start, end);
   }
 }
 
-void Winograd::CountOddRows(Matrix& result, int start, int end) {
+void Winograd::CountOddRows(Matrix& result, const int start,
+                            const int end) const {
   for (int i = start; i < end; ++i) {
     for (int j = 0; j < b_.GetCols(); ++j) {
       result.GetMatrix()[i][j] += a_.GetMatrix()[i][a_.GetCols() - 1] *
