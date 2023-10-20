@@ -8,6 +8,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <stack>
 
 #include "../matrix/matrix.h"
 
@@ -239,6 +240,9 @@ class Aco {
   }
 
   void Execute(bool in_parallel = false) {
+    if (IsDisconnected(distances_)) {
+     throw std::invalid_argument("Graph is disconnected");
+    }
     int n_epochs_max = n_epochs_max_;
     int n_epochs_stable = n_epochs_stable_;
     int counter = 1;
@@ -264,6 +268,75 @@ class Aco {
   }
 
  private:
+
+//  void DFS(Matrix& graph, int start, std::vector<bool>& visited) {
+
+//     std::stack<int> s;
+//     s.push(start);
+    
+//     visited[start] = true;
+//     // std::cout << start << " " << visited[start] << std::endl;
+//     while (!s.empty()) {
+//         auto current = s.top();
+        
+//         s.pop();
+//       std::cout << current << " " << visited[current] << std::endl;
+//         for (auto neighbor : graph.GetMatrix()[current]) {
+//           std::cout << neighbor << " " << visited[neighbor] << std::endl;
+//             if (!visited[neighbor]) {
+//                 s.push(neighbor);
+//                 visited[neighbor] = true;
+//             }
+//         }
+//     }
+// }
+
+ void DFS(Matrix& graph, int start, std::vector<bool>& visited) {
+  // std::vector<int> visited;
+  int num_vertices = graph.GetRows();
+  // std::vector<bool> is_visited(num_vertices, false);
+  std::stack<int> stack;
+  stack.push(start - 1);
+  visited[start - 1] = true;
+  // visited.push_back(start);
+  while (!stack.empty()) {
+    int current_vertex = stack.top();
+    stack.pop();
+    if (!visited[current_vertex]) {
+      visited[current_vertex] = true;
+      // visited.push_back(current_vertex + 1);
+    }
+    for (int neighbor = num_vertices - 1; neighbor >= 0; --neighbor) {
+      if (graph.GetMatrix()[current_vertex][neighbor] != 0 &&
+          !visited[neighbor]) {
+        stack.push(neighbor);
+      }
+    }
+  }
+
+}
+
+
+// Check if the graph is disconnected
+bool IsDisconnected(Matrix& graph) {
+ 
+    int numVertices = graph.GetRows();
+   
+    std::vector<bool> visited(numVertices, false);
+    
+    // Start the DFS traversal from the first vertex
+    DFS(graph, 1, visited);
+     
+    // Check if any vertex is not visited
+    for (bool v : visited) {
+        if (!v) {
+            return true; // Graph is disconnected
+        }
+    }
+    // std::cout << "after for "  << std::endl;
+    return false; // Graph is connected
+}
+
   AntTourResult SendAntToTour(int vertexToStart) {
     Ant ant = CreateAnt(vertexToStart);
     std::vector<int> route = ant.FullTour();
