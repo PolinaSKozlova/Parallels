@@ -1,5 +1,5 @@
 #all, clean, ant, gauss, winograd, test
-CC = g++
+CC = g++ -fopenmp
 CC_FLAGS = -Wall -Wextra -Werror -std=c++17 #-pedantic-errors
 MFLAGS=-MMD -MP
 TEST_FLAGS = -lgtest -pthread

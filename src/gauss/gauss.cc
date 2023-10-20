@@ -2,6 +2,10 @@
 
 #include <iostream>
 #include <set>
+#include <mutex>
+#include <algorithm>
+#include <execution>
+#include <omp.h>
 
 std::mutex mtx_;
 namespace Parallels {
@@ -42,42 +46,80 @@ std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix) {
   return GaussBackSubstitution();
 }
 
-void Gauss::GaussMultiThreadedElimination() {
-   unsigned  int thread_number{
-      std::min((std::thread::hardware_concurrency() - 1),
-               (unsigned  int)gauss_matrix_.GetRows())};
-  std::vector<std::thread> threads(thread_number);
-
-  // size_t all_rows = (gauss_matrix_.GetRows() * (gauss_matrix_.GetRows() -1))/2;
-  int i = 0;
-  while(i < gauss_matrix_.GetRows()-1){ 
-    int j = i+1;
-    while( j < gauss_matrix_.GetRows()) {
-   size_t t = 0;
-  //  if(all_rows < thread_number) {
-  //   threads.resize(all_rows);
-  //   } 
-  //   if(all_rows == 0) {
-  //   threads.resize(1);
-  //   }
-    for( ; t < thread_number &&  j < gauss_matrix_.GetRows(); ++t, ++j) {
+// void Gauss::GaussMultiThreadedElimination() {
+//    unsigned  int thread_number{
+//       std::min((std::thread::hardware_concurrency() - 1),
+//                (unsigned  int)gauss_matrix_.GetRows())};
+//   std::vector<std::thread> threads(thread_number);
+//   std::mutex mutex;
+//   // size_t all_rows = (gauss_matrix_.GetRows() * (gauss_matrix_.GetRows() -1))/2;
+//   int i = 0;
+//   while(i < gauss_matrix_.GetRows()-1){ 
+//     int j = i+1;
+//     while( j < gauss_matrix_.GetRows()) {
+//    size_t t = 0;
+//   //  if(all_rows < thread_number) {
+//   //   threads.resize(all_rows);
+//   //   } 
+//   //   if(all_rows == 0) {
+//   //   threads.resize(1);
+//   //   }
+//     for( ; t < thread_number &&  j < gauss_matrix_.GetRows(); ++t, ++j) {
       
-    threads.at(t) = std::move(std::thread([i, j, this]() { GaussEliminateElement(i, j); }));
+//     threads.at(t) = std::move(std::thread([&, i, j]() { 
+//         GaussEliminateElement(i, j);
+//         std::lock_guard<std::mutex> lock(mutex);
+//      }));
    
-    // std::cout << "thread id " <<t  << " - "<< threads.at(t).get_id() << std::endl;
-    // if(t < thread_number-1)
-    //   {  
-    //      ++j; }
-      } 
-      // all_rows -=t;
-      t = 0;
+//     // std::cout << "thread id " <<t  << " - "<< threads.at(t).get_id() << std::endl;
+//     // if(t < thread_number-1)
+//     //   {  
+//     //      ++j; }
+//       } 
+//       // all_rows -=t;
+//       t = 0;
  
-    for (auto& th : threads) {
-      if (th.joinable()) th.join();
+//     for (auto& th : threads) {
+//       if (th.joinable()) th.join();
+//     }
+//   }
+//   ++i;
+//   }
+// };
+
+//stl try
+void Gauss::GaussMultiThreadedElimination() {
+  //  unsigned  int thread_number{
+  //     std::min((std::thread::hardware_concurrency() - 1),
+  //              (unsigned  int)gauss_matrix_.GetRows())};
+  // std::vector<std::thread> threads(thread_number);
+  // std::mutex mutex;
+
+  // int num_threads = omp_get_max_threads();
+  // std::cout << "omp_get_max_threads();" <<  num_threads  << std::endl;
+  // void(num_threads);
+  // size_t all_rows = (gauss_matrix_.GetRows() * (gauss_matrix_.GetRows() -1))/2;
+
+  std::vector<std::pair<int, int>> all_rows{};   
+    for (int i = 0; i < gauss_matrix_.GetRows() - 1; ++i) {
+      for (int j = i + 1; j < gauss_matrix_.GetRows(); ++j) {
+    all_rows.push_back(std::make_pair(i, j));
     }
   }
-  ++i;
-  }
+// std::vector<std::pair<int, int>> all_rows;
+      
+std::for_each(std::execution::par_unseq, all_rows.begin(), all_rows.end(),  [&](std::pair<int, int> row) {
+          int i = row.first;
+          int j = row.second;
+          GaussEliminateElement(i, j);
+  });
+  
+
+// std::for_each(std::execution::par, all_rows.begin(), all_rows.end(),  [&](int , int)  {
+//           GaussEliminateElement(all_rows.begin()->first, all_rows.begin()->second);
+//          });
+
+
 };
 
 
