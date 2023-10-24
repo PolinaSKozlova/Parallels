@@ -70,16 +70,12 @@ class Console {
         std::cin >> size;
         ClearInput();
         matrix_ = EnterMatrix(size);
-        std::cout << "\nEnter amount of iterations\n";
-        int iterations{};
-        std::cin >> iterations;
-        if (iterations_ < 0)
-          throw std::invalid_argument("Incorrect number of iterations");
         std::cout << "\n=============================================\n";
+        int iterations = GetIterations();
         time_ = CountTime([this, iterations](int) { CallAntUsual(iterations); },
                           iterations);
         ShowTime("Ant usual: ");
-        std::cout << "\n=============================================\n";
+        // std::cout << "\n=============================================\n";
         time_ =
             CountTime([this, iterations](int) { CallAntParallel(iterations); },
                       iterations);
@@ -103,9 +99,7 @@ class Console {
         std::cout << "Enter matrix size(rows and cols)\n";
         matrix_ = EnterMatrix();
         std::cout << "\n=============================================\n";
-        std::cout << "\nEnter amount of iterations\n";
-        int iterations{};
-        std::cin >> iterations;
+        int iterations = GetIterations();
         time_ =
             CountTime([this, iterations](int) { CallGaussUsual(iterations); },
                       iterations);
@@ -134,11 +128,8 @@ class Console {
         matrix_ = EnterMatrix();
         std::cout << "\nEnter matrix B size(rows and cols)\n";
         matrix_w_ = EnterMatrix();
-        std::cout << "\nEnter amount of iterations\n";
-        int iterations{};
-        std::cin >> iterations;
-        if (iterations < 0)
-          throw std::invalid_argument("Incorrect number of iterations");
+        std::cout << "\n=============================================\n";
+        int iterations = GetIterations();
         std::cout << "\nEnter amount of threads\n";
         std::cin >> threads_;
         std::cout << "\n=============================================\n";
@@ -162,6 +153,15 @@ class Console {
       std::cout << "Do you want to continue? Enter yes or no\n";
       std::cin >> answer;
     }
+  }
+
+  int GetIterations() const {
+    std::cout << "Enter amount of iterations\n";
+    int iterations{};
+    std::cin >> iterations;
+    if (iterations < 0)
+      throw std::invalid_argument("Incorrect number of iterations");
+    return iterations;
   }
 
   Matrix EnterMatrix() {
