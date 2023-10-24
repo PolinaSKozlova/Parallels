@@ -75,7 +75,6 @@ class Console {
         time_ = CountTime([this, iterations](int) { CallAntUsual(iterations); },
                           iterations);
         ShowTime("Ant usual: ");
-        // std::cout << "\n=============================================\n";
         time_ =
             CountTime([this, iterations](int) { CallAntParallel(iterations); },
                       iterations);
