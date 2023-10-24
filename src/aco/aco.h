@@ -91,14 +91,10 @@ class Ant {
       desires_for_directions.push_back({direction.first, desire});
     }
 
-    // double sum_of_desires = 0.0;
-    // for (const auto &d : desires_for_directions) {
-    //   sum_of_desires += d.second;
-    // }
-
-    double sum_of_desires =
-        std::accumulate(&desires_for_directions.begin()->second,
-                        &desires_for_directions.end()->second, 0);
+    double sum_of_desires = 0.0;
+    for (const auto &d : desires_for_directions) {
+      sum_of_desires += d.second;
+    }
 
     double mark = 0.0;
     for (const auto &desire : desires_for_directions) {
@@ -267,7 +263,6 @@ class Aco {
     }
   }
 
-  // Check if the graph is disconnected
   bool IsDisconnected(Matrix &graph) {
     int numVertices = graph.GetRows();
 
@@ -280,6 +275,7 @@ class Aco {
         return true;
       }
     }
+
     return false;
   }
 
