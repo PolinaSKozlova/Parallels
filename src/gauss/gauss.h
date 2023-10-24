@@ -1,7 +1,6 @@
 #ifndef PARALLELS_GAUSS_H
 #define PARALLELS_GAUSS_H
 
-#include <mutex>
 #include <thread>
 #include <vector>
 
