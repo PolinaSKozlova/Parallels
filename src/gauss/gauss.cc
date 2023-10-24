@@ -1,5 +1,7 @@
 #include "gauss.h"
 
+#include <iomanip>
+
 #include <omp.h>
 
 #include <algorithm>
@@ -37,13 +39,13 @@ std::vector<double> Gauss::RunUsualGauss(const Matrix& matrix) {
   return result;
 }
 
-std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix) {
+std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix,std::vector<std::pair<int, int>> all_rows) {
   if (matrix.CheckZeroRow() || matrix.CheckZeroCol() ||
       !HasOneSolution(matrix)) {
     throw std::invalid_argument("There is no solution!");
   }
   gauss_matrix_ = matrix;
-  GaussMultiThreadedElimination();
+  GaussMultiThreadedElimination(all_rows);
   return GaussBackSubstitution();
 }
 
@@ -89,7 +91,7 @@ std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix) {
 // };
 
 // stl try
-void Gauss::GaussMultiThreadedElimination() {
+void Gauss::GaussMultiThreadedElimination(std::vector<std::pair<int, int>> all_rows) {
   //  unsigned  int thread_number{
   //     std::min((std::thread::hardware_concurrency() - 1),
   //              (unsigned  int)gauss_matrix_.GetRows())};
@@ -102,13 +104,15 @@ void Gauss::GaussMultiThreadedElimination() {
   // size_t all_rows = (gauss_matrix_.GetRows() * (gauss_matrix_.GetRows()
   // -1))/2;
 
-  std::vector<std::pair<int, int>> all_rows{};
-  for (int i = 0; i < gauss_matrix_.GetRows() - 1; ++i) {
-    for (int j = i + 1; j < gauss_matrix_.GetRows(); ++j) {
-      all_rows.push_back(std::make_pair(i, j));
-    }
-  }
-  // std::vector<std::pair<int, int>> all_rows;
+// auto start{std::chrono::system_clock::now()};
+//   std::vector<std::pair<int, int>> all_rows{};
+//   for (int i = 0; i < gauss_matrix_.GetRows() - 1; ++i) {
+//     for (int j = i + 1; j < gauss_matrix_.GetRows(); ++j) {
+//       all_rows.push_back(std::make_pair(i, j));
+//     }
+//   }
+//   auto finish{std::chrono::system_clock::now()};
+//   std::cout <<"time for vector " << std::fixed << std::setprecision(6) << std::chrono::duration<double>(finish - start).count() <<  std::defaultfloat << "\n";
 
   std::for_each(std::execution::par_unseq, all_rows.begin(), all_rows.end(),
                 [&](std::pair<int, int> row) {
@@ -117,11 +121,6 @@ void Gauss::GaussMultiThreadedElimination() {
                   GaussEliminateElement(i, j);
                 });
 
-  // std::for_each(std::execution::par, all_rows.begin(), all_rows.end(),
-  // [&](int , int)  {
-  //           GaussEliminateElement(all_rows.begin()->first,
-  //           all_rows.begin()->second);
-  //          });
 };
 
 void Gauss::GaussElimination() {
