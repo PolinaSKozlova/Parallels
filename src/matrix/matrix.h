@@ -12,7 +12,7 @@ class Matrix {
   Matrix() = default;
   explicit Matrix(size_t n)
       : matrix_(n, std::vector<double>(n)), rows_(n), cols_(n) {}
-  Matrix(size_t m, size_t n)
+  explicit Matrix(size_t m, size_t n)
       : matrix_(m, std::vector<double>(n)), rows_(m), cols_(n) {}
   Matrix(const Matrix& other)
       : matrix_(other.matrix_), rows_(other.rows_), cols_(other.cols_) {}
@@ -57,7 +57,6 @@ class Matrix {
   int GetRows() const noexcept { return rows_; }
   int GetCols() const noexcept { return cols_; }
 
-  // to think: may be array?
   void FillMatrix(const std::vector<double>& matrix) {
     int index{};
     for (int i = 0; i < rows_; ++i) {
@@ -74,7 +73,7 @@ class Matrix {
     }
   }
 
-  bool CheckZeroRow() const {
+  bool CheckZeroRow() const noexcept {
     bool zero = false;
     int i = 0;
     while (i < rows_) {
@@ -92,7 +91,7 @@ class Matrix {
     return zero;
   }
 
-  bool CheckZeroCol() const {
+  bool CheckZeroCol() const noexcept {
     bool zero = false;
     int j = 0;
     while (j < cols_) {
@@ -110,8 +109,7 @@ class Matrix {
     return zero;
   }
 
-  void PrintMatrix() const {
-    // std::cout << "rows " << rows_ << " cols " << cols_ << std::endl;
+  void PrintMatrix() const noexcept {
     for (int i = 0; i < rows_; ++i) {
       for (int j = 0; j < cols_; ++j) {
         std::cout << matrix_[i][j] << " ";
@@ -120,7 +118,7 @@ class Matrix {
     }
   }
 
-  void PrintMatrix(VVDouble& v) const {
+  void PrintMatrix(VVDouble& v) const noexcept {
     for (size_t i = 0; i < v.size(); ++i) {
       for (size_t j = 0; j < v[i].size(); ++j) {
         std::cout << v[i][j] << " ";
