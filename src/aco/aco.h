@@ -3,12 +3,12 @@
 
 #include <algorithm>
 #include <iostream>
+#include <mutex>
 #include <random>
 #include <set>
-#include <vector>
-#include <thread>
-#include <mutex>
 #include <stack>
+#include <thread>
+#include <vector>
 
 #include "../matrix/matrix.h"
 
@@ -112,7 +112,7 @@ class Ant {
     for (const auto &entry : roulette) {
       if (dice_roll >= entry.second.first && dice_roll < entry.second.second) {
         return entry.first;
-      } 
+      }
     }
     return -1;
   }
@@ -202,25 +202,11 @@ class Aco {
     std::vector<int> route;
     double route_length;
     std::vector<std::vector<double>> additive;
-
-    void PrintResult() {
-      std::cout << route_length << std::endl;
-      for (const auto &vertex : route) {
-        std::cout << vertex << " ";
-      }
-      std::cout << std::endl;
-      for (const auto &vertex : additive) {
-        for (const auto &value : vertex) {
-          std::cout << value << " ";
-        }
-        std::cout << std::endl;
-      }
-    }
   };
 
-  Aco(Matrix input, double initial_pheromone=0.2, double alpha=1, double beta=1,
-      double pheromone_leftover=0.6, int n_epochs_max=1000, 
-      int n_epochs_stable=50)
+  Aco(Matrix input, double initial_pheromone = 0.2, double alpha = 1,
+      double beta = 1, double pheromone_leftover = 0.6, int n_epochs_max = 1000,
+      int n_epochs_stable = 50)
       : distances_(input),
         pheromones_(input.GetRows(), input.GetCols()),
         alpha_(alpha),
@@ -231,23 +217,18 @@ class Aco {
         n_epochs_stable_(n_epochs_stable) {
     InitPheromonMatrix(distances_, initial_pheromone);
   };
-  std::vector<int> GetRoute() {
-    return best_route_;
-  }
+  std::vector<int> GetRoute() { return best_route_; }
 
-  double GetRouteLength() {
-    return best_route_length_;
-  }
+  double GetRouteLength() { return best_route_length_; }
 
   void Execute(bool in_parallel = false) {
     if (IsDisconnected(distances_)) {
-     throw std::invalid_argument("Graph is disconnected");
+      throw std::invalid_argument("Graph is disconnected");
     }
     int n_epochs_max = n_epochs_max_;
     int n_epochs_stable = n_epochs_stable_;
     int counter = 1;
     while (n_epochs_max > 0 && n_epochs_stable > 0) {
-      //   std::cout << "Starting epoch #" << counter << std::endl;
       bool is_it_a_new_route = ExecuteEpoch(in_parallel);
       if (!is_it_a_new_route) {
         --n_epochs_stable;
@@ -257,85 +238,47 @@ class Aco {
 
       ++counter;
       --n_epochs_max;
-
-      // std::cout << std::boolalpha << is_it_a_new_route << std::endl;
-      // std::cout << best_route_length_ << std::endl;
-      // for (const auto &vertex : best_route_) {
-      //   std::cout << vertex << " ";
-      // }
-      // std::cout << std::endl;
     }
   }
 
  private:
-
-//  void DFS(Matrix& graph, int start, std::vector<bool>& visited) {
-
-//     std::stack<int> s;
-//     s.push(start);
-    
-//     visited[start] = true;
-//     // std::cout << start << " " << visited[start] << std::endl;
-//     while (!s.empty()) {
-//         auto current = s.top();
-        
-//         s.pop();
-//       std::cout << current << " " << visited[current] << std::endl;
-//         for (auto neighbor : graph.GetMatrix()[current]) {
-//           std::cout << neighbor << " " << visited[neighbor] << std::endl;
-//             if (!visited[neighbor]) {
-//                 s.push(neighbor);
-//                 visited[neighbor] = true;
-//             }
-//         }
-//     }
-// }
-
- void DFS(Matrix& graph, int start, std::vector<bool>& visited) {
-  // std::vector<int> visited;
-  int num_vertices = graph.GetRows();
-  // std::vector<bool> is_visited(num_vertices, false);
-  std::stack<int> stack;
-  stack.push(start - 1);
-  visited[start - 1] = true;
-  // visited.push_back(start);
-  while (!stack.empty()) {
-    int current_vertex = stack.top();
-    stack.pop();
-    if (!visited[current_vertex]) {
-      visited[current_vertex] = true;
-      // visited.push_back(current_vertex + 1);
-    }
-    for (int neighbor = num_vertices - 1; neighbor >= 0; --neighbor) {
-      if (graph.GetMatrix()[current_vertex][neighbor] != 0 &&
-          !visited[neighbor]) {
-        stack.push(neighbor);
+  void DFS(Matrix &graph, int start, std::vector<bool> &visited) {
+    int num_vertices = graph.GetRows();
+    std::stack<int> stack;
+    stack.push(start - 1);
+    visited[start - 1] = true;
+    while (!stack.empty()) {
+      int current_vertex = stack.top();
+      stack.pop();
+      if (!visited[current_vertex]) {
+        visited[current_vertex] = true;
+      }
+      for (int neighbor = num_vertices - 1; neighbor >= 0; --neighbor) {
+        if (graph.GetMatrix()[current_vertex][neighbor] != 0 &&
+            !visited[neighbor]) {
+          stack.push(neighbor);
+        }
       }
     }
   }
 
-}
-
-
-// Check if the graph is disconnected
-bool IsDisconnected(Matrix& graph) {
- 
+  // Check if the graph is disconnected
+  bool IsDisconnected(Matrix &graph) {
     int numVertices = graph.GetRows();
-   
+
     std::vector<bool> visited(numVertices, false);
-    
+
     // Start the DFS traversal from the first vertex
     DFS(graph, 1, visited);
-     
+
     // Check if any vertex is not visited
     for (bool v : visited) {
-        if (!v) {
-            return true; // Graph is disconnected
-        }
+      if (!v) {
+        return true;  // Graph is disconnected
+      }
     }
-    // std::cout << "after for "  << std::endl;
-    return false; // Graph is connected
-}
+    return false;  // Graph is connected
+  }
 
   AntTourResult SendAntToTour(int vertexToStart) {
     Ant ant = CreateAnt(vertexToStart);
@@ -363,60 +306,33 @@ bool IsDisconnected(Matrix& graph) {
     return results;
   }
 
-//   std::vector<AntTourResult> SendAntsToTourParallel() {
-//     int nAnts = distances_.GetRows();
-//     std::vector<AntTourResult> results(nAnts);
-//     std::vector<std::thread> threads;
-//     std::mutex mutex;
-
-//     for (int idx = 0; idx < nAnts; ++idx) {
-//         threads.emplace_back([&, idx]() {
-//             AntTourResult result = SendAntToTour(idx);
-//             std::lock_guard<std::mutex> lock(mutex);
-//             results[idx] = result;
-//         });
-//     }
-
-//     for (auto& t : threads) {
-//         t.join();
-//     }
-
-//     return results;
-// }
-
-
-// threads number defined
   std::vector<AntTourResult> SendAntsToTourParallel() {
     int nAnts = distances_.GetRows();
     std::vector<AntTourResult> results(nAnts);
     std::mutex mutex;
 
-    unsigned  int thread_number = 
-      std::min((std::thread::hardware_concurrency() - 1),
-               (unsigned int)nAnts);
+    unsigned int thread_number = std::min(
+        (std::thread::hardware_concurrency() - 1), (unsigned int)nAnts);
 
     std::vector<std::thread> threads(thread_number);
-int idx = 0;
-while (idx < nAnts) {
-  size_t t = 0;
-    for (; t < thread_number && idx < nAnts; ++idx, ++t) {
-
-      threads.at(t) = std::move(std::thread([&, idx]() {
-            AntTourResult result = SendAntToTour(idx);
-            std::lock_guard<std::mutex> lock(mutex);
-            results[idx] = result;
+    int idx = 0;
+    while (idx < nAnts) {
+      size_t t = 0;
+      for (; t < thread_number && idx < nAnts; ++idx, ++t) {
+        threads.at(t) = std::move(std::thread([&, idx]() {
+          AntTourResult result = SendAntToTour(idx);
+          std::lock_guard<std::mutex> lock(mutex);
+          results[idx] = result;
         }));
-        
-    }   for (auto& th : threads) {
-       if (th.joinable()) th.join();
+      }
+      for (auto &th : threads) {
+        if (th.joinable()) th.join();
+      }
+      t = 0;
     }
-    t = 0;
-}
- 
 
     return results;
-}
-
+  }
 
   AntTourResult ReduceTourResults(const std::vector<AntTourResult> &results) {
     std::vector<std::vector<double>> additive = results[0].additive;
@@ -516,18 +432,26 @@ while (idx < nAnts) {
   double n_epochs_stable_;
 };
 
-
 class AcoExecutor {
-public:
+ public:
   AcoExecutor() {}
-  std::pair<std::vector<int>, double> Run(const Matrix& distances, 
-          int execute_iterations, 
-          bool in_parallel = false) {
+  std::pair<std::vector<int>, double> RunSequential(const Matrix &distances,
+                                                    int execute_iterations) {
+    return Run(distances, execute_iterations);
+  }
+  std::pair<std::vector<int>, double> RunParallel(const Matrix &distances,
+                                                  int execute_iterations) {
+    return Run(distances, execute_iterations, true);
+  }
+
+ private:
+  std::pair<std::vector<int>, double> Run(const Matrix &distances,
+                                          int execute_iterations,
+                                          bool in_parallel = false) {
     std::vector<int> best_route;
     double best_route_length = 0.0;
     for (int i = 0; i < execute_iterations; ++i) {
-      if ((i+1) % 1 == 0) {
-        // std::cout << "Iteration #" << i + 1 << std::endl;
+      if ((i + 1) % 1 == 0) {
       }
       Aco aco_instance(distances);
       aco_instance.Execute(in_parallel);
@@ -538,13 +462,7 @@ public:
     }
     return std::make_pair(best_route, best_route_length);
   }
-  std::pair<std::vector<int>, double> RunSequential(const Matrix& distances, int execute_iterations) {
-    return Run(distances, execute_iterations);
-  }
-  std::pair<std::vector<int>, double> RunParallel(const Matrix& distances, int execute_iterations) {
-    return Run(distances, execute_iterations, true);
-  }
 };
-}; // namespace Parallels
+};  // namespace Parallels
 
 #endif  // PARALLELS_ACO_H
