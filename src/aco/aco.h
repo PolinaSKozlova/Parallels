@@ -91,10 +91,14 @@ class Ant {
       desires_for_directions.push_back({direction.first, desire});
     }
 
-    double sum_of_desires = 0.0;
-    for (const auto &d : desires_for_directions) {
-      sum_of_desires += d.second;
-    }
+    // double sum_of_desires = 0.0;
+    // for (const auto &d : desires_for_directions) {
+    //   sum_of_desires += d.second;
+    // }
+
+    double sum_of_desires =
+        std::accumulate(&desires_for_directions.begin()->second,
+                        &desires_for_directions.end()->second, 0);
 
     double mark = 0.0;
     for (const auto &desire : desires_for_directions) {
@@ -204,9 +208,10 @@ class Aco {
     std::vector<std::vector<double>> additive;
   };
 
-  Aco(Matrix input, double initial_pheromone = 0.2, double alpha = 1,
-      double beta = 1, double pheromone_leftover = 0.6, int n_epochs_max = 1000,
-      int n_epochs_stable = 50)
+  explicit Aco(const Matrix &input, double initial_pheromone = 0.2,
+               double alpha = 1, double beta = 1,
+               double pheromone_leftover = 0.6, int n_epochs_max = 1000,
+               int n_epochs_stable = 50)
       : distances_(input),
         pheromones_(input.GetRows(), input.GetCols()),
         alpha_(alpha),
@@ -268,16 +273,14 @@ class Aco {
 
     std::vector<bool> visited(numVertices, false);
 
-    // Start the DFS traversal from the first vertex
     DFS(graph, 1, visited);
 
-    // Check if any vertex is not visited
     for (bool v : visited) {
       if (!v) {
-        return true;  // Graph is disconnected
+        return true;
       }
     }
-    return false;  // Graph is connected
+    return false;
   }
 
   AntTourResult SendAntToTour(int vertexToStart) {
@@ -393,17 +396,7 @@ class Aco {
     return isItANewRoute;
   }
 
-  void State() {
-    distances_.PrintMatrix();
-    pheromones_.PrintMatrix();
-    std::cout << best_route_length_ << std::endl;
-    for (const auto &vertex : best_route_) {
-      std::cout << vertex << " ";
-    }
-    std::cout << std::endl;
-  }
-
-  void InitPheromonMatrix(Matrix &distances, double initial_pheromone) {
+  void InitPheromonMatrix(const Matrix &distances, double initial_pheromone) {
     VVDouble distances_matrix = distances_.GetMatrix();
     for (int i = 0; i < distances.GetRows(); ++i) {
       for (int j = 0; j < distances.GetCols(); ++j) {
@@ -451,8 +444,6 @@ class AcoExecutor {
     std::vector<int> best_route;
     double best_route_length = 0.0;
     for (int i = 0; i < execute_iterations; ++i) {
-      if ((i + 1) % 1 == 0) {
-      }
       Aco aco_instance(distances);
       aco_instance.Execute(in_parallel);
       if (i == execute_iterations - 1) {
