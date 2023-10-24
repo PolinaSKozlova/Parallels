@@ -1,7 +1,7 @@
 #ifndef PARALLELS_GAUSS_H
 #define PARALLELS_GAUSS_H
 
-#include <thread>
+#include <mutex>
 #include <vector>
 
 #include "../matrix/matrix.h"
@@ -45,11 +45,11 @@ class GaussExecutor {
     Gauss gauss;
     std::vector<double> result;
     std::vector<std::pair<int, int>> all_rows{};
-  for (int i = 0; i < matrix.GetRows() - 1; ++i) {
-    for (int j = i + 1; j < matrix.GetRows(); ++j) {
-      all_rows.push_back(std::make_pair(i, j));
+    for (int i = 0; i < matrix.GetRows() - 1; ++i) {
+      for (int j = i + 1; j < matrix.GetRows(); ++j) {
+        all_rows.push_back(std::make_pair(i, j));
+      }
     }
-  }
     for (int i = 0; i < iterations; ++i) {
       result = gauss.RunParallelGauss(matrix, all_rows);
     }
