@@ -5,32 +5,43 @@
 
 namespace Parallels {
 
+struct WinogradData {
+  WinogradData() = default;
+  WinogradData(const Matrix& a, const Matrix& b) : a_(a), b_(b) {}
+  Matrix a_;
+  Matrix b_;
+  Matrix result_;
+  std::vector<double> row_factor_;
+  std::vector<double> column_factor_;
+  int half_size_;
+};
+
 class Winograd {
  public:
   Winograd() = default;
-  explicit Winograd(const Matrix& a, const Matrix& b) : a_(a), b_(b) {
-    if (!CheckSize(a.GetCols(), b.GetRows()))
-      throw std::invalid_argument("Matrices are not compatible!");
+  explicit Winograd(const Matrix& a, const Matrix& b) : wd_{a, b} {
+    if (!CheckSize(wd_.a_.GetCols(), wd_.b_.GetRows())){
+      throw std::invalid_argument("Matrices are not compatible!");}
+    SetMatrix(wd_.a_, wd_.b_);
   }
   ~Winograd() = default;
-  Matrix MultiplyMatrices(const Matrix& a, const Matrix& b);
-  Matrix MultiplyMatricesInParallels(const Matrix& a, const Matrix& b,
-                                     unsigned int threads_amount);
-  Matrix MultiplyMatricesInPipeline(const Matrix& a, const Matrix& b);
+  Matrix MultiplyMatrices();
+  Matrix MultiplyMatricesInParallels(unsigned int threads_amount);
+  Matrix MultiplyMatricesInPipeline();
+
+  WinogradData GetWinogradData() const { return wd_; }
+  Matrix GetResultMatrix() const { return wd_.result_; }
 
  private:
   void SetMatrix(const Matrix& a, const Matrix& b);
-  std::vector<double> CountRowFactors();
-  std::vector<double> CountColumnFactors();
-  void CountResultMatrix(Matrix& result_matrix, std::vector<double> row_factor,
-                         std::vector<double> column_factor, const int start,
-                         const int end) const;
-  void CountOddRows(Matrix& result, const int start, const int end) const;
+  void CountRowFactors();
+  void CountColumnFactors();
+  void CountResultMatrix(const int start,
+                         const int end) ;
+  void CountOddRows(const int start, const int end) const;
   bool CheckSize(const int a_cols, const int b_rows) const noexcept;
   bool IsOddMatrix(const int a_cols) const;
-  Matrix a_;
-  Matrix b_;
-  int half_size_{};
+  WinogradData wd_{};
 };
 
 class WinogradExecutor {
@@ -38,29 +49,33 @@ class WinogradExecutor {
   WinogradExecutor() = default;
   ~WinogradExecutor() = default;
   Matrix Run(const Matrix& a, const Matrix& b, const int iterations) const {
-    Winograd winograd;
-    Matrix result;
+    Winograd winograd (a, b);
+
+   
     for (int i = 0; i < iterations; ++i) {
-      result = winograd.MultiplyMatrices(a, b);
+      winograd.MultiplyMatrices();
     }
+    Matrix result = winograd.GetResultMatrix();
     return result;
   }
   Matrix RunParallels(const Matrix& a, const Matrix& b, const int iterations,
                       unsigned int threads_amount) const {
-    Winograd winograd;
-    Matrix result;
+    Winograd winograd(a, b);
+ 
     for (int i = 0; i < iterations; ++i) {
-      result = winograd.MultiplyMatricesInParallels(a, b, threads_amount);
+      winograd.MultiplyMatricesInParallels(threads_amount);
     }
+    Matrix result = winograd.GetResultMatrix();
     return result;
   }
   Matrix RunPipeline(const Matrix& a, const Matrix& b,
                      const int iterations) const {
-    Winograd winograd;
-    Matrix result;
+    Winograd winograd(a, b);
+    
     for (int i = 0; i < iterations; ++i) {
-      result = winograd.MultiplyMatricesInPipeline(a, b);
+      winograd.MultiplyMatricesInPipeline();
     }
+    Matrix result = winograd.GetResultMatrix();
     return result;
   }
 };

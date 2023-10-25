@@ -18,11 +18,12 @@ int main() {
   a.PrintMatrix();
   std::cout << "Matrix b:" << std::endl;
   b.PrintMatrix();
-  Parallels::Winograd w;
+  Parallels::Winograd w(a,b); 
   try {
-    // Parallels::Matrix res = w.MultiplyMatrices(a, b);
+    w.MultiplyMatrices();
     // Parallels::Matrix res = w.MultiplyMatricesInConveyor(a, b);
-    Parallels::Matrix res = w.MultiplyMatricesInParallels(a, b, 4);
+    //  w.MultiplyMatricesInParallels(4);
+     Parallels::Matrix res = w.GetResultMatrix();
     std::cout << "Matrix res:" << std::endl;
     res.PrintMatrix();
     // std::cout << "getter:" << std::endl;
