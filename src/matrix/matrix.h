@@ -127,6 +127,14 @@ class Matrix {
     }
   }
 
+  void FillRandomMatrix() {
+    for (int i = 0; i < rows_; ++i) {
+      for (int j = 0; j < cols_; ++j) {
+        matrix_[i][j] = rand() % 100 + 1;
+      }
+    }
+  }
+
  private:
   VVDouble matrix_;
   int rows_{};

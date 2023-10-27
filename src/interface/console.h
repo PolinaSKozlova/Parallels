@@ -54,7 +54,7 @@ class Console {
     }
   }
 
-  std::string ToLower(std::string& s) const {
+  std::string ToLower(std::string s) const {
     std::transform(s.begin(), s.end(), s.begin(),
                    [](unsigned char c) { return std::tolower(c); });
     return s;
@@ -169,28 +169,43 @@ class Console {
     ClearInput();
     if (rows < 1 || cols < 1)
       throw std::invalid_argument("Incorrect matrix size");
-    std::cout << "Enter matrix value\n";
     Matrix result(rows, cols);
-    for (int i = 0; i < rows; ++i) {
-      for (int j = 0; j < cols; ++j) {
-        std::cin >> result.GetMatrix()[i][j];
+    if (std::regex_match(ToLower(CheckAnswer()), std::regex("yes|y"))) {
+      result.FillRandomMatrix();
+    } else {
+      std::cout << "Enter matrix value\n";
+      for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+          std::cin >> result.GetMatrix()[i][j];
+        }
+      }
+      ClearInput();
+    }
+    return result;
+  }
+
+  Matrix EnterMatrix(int size) {
+    if (size < 1) throw std::invalid_argument("Incorrect matrix size");
+    Matrix result(size);
+    if (std::regex_match(ToLower(CheckAnswer()), std::regex("yes|y"))) {
+      result.FillRandomMatrix();
+    } else {
+      std::cout << "Enter matrix value\n";
+      for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+          std::cin >> result.GetMatrix()[i][j];
+        }
       }
     }
     ClearInput();
     return result;
   }
 
-  Matrix EnterMatrix(int size) {
-    if (size < 1) throw std::invalid_argument("Incorrect matrix size");
-    std::cout << "Enter matrix value\n";
-    Matrix result(size);
-    for (int i = 0; i < size; ++i) {
-      for (int j = 0; j < size; ++j) {
-        std::cin >> result.GetMatrix()[i][j];
-      }
-    }
-    ClearInput();
-    return result;
+  std::string CheckAnswer() const {
+    std::cout << "Do you want create random matrix? Enter yes or no\n";
+    std::string answer{};
+    std::cin >> answer;
+    return answer;
   }
 
   void CallAntUsual(const int iterations) {
