@@ -54,7 +54,7 @@ class Console {
     }
   }
 
-  std::string ToLower(std::string& s) const {
+  std::string ToLower(std::string s) const {
     std::transform(s.begin(), s.end(), s.begin(),
                    [](unsigned char c) { return std::tolower(c); });
     return s;
@@ -171,10 +171,7 @@ class Console {
     if (rows < 1 || cols < 1)
       throw std::invalid_argument("Incorrect matrix size");
     Matrix result(rows, cols);
-    std::cout << "Do you want create random matrix? Enter yes or no\n";
-    std::string answer{};
-    std::cin >> answer;
-    if (std::regex_match(ToLower(answer), std::regex("yes|y"))) {
+    if (std::regex_match(ToLower(CheckAnswer()), std::regex("yes|y"))) {
       result.FillRandomMatrix();
     } else {
       std::cout << "Enter matrix value\n";
@@ -190,11 +187,8 @@ class Console {
 
   Matrix EnterMatrix(int size) {
     if (size < 1) throw std::invalid_argument("Incorrect matrix size");
-    std::cout << "Do you want create random matrix? Enter yes or no\n";
-    std::string answer{};
-    std::cin >> answer;
     Matrix result(size);
-    if (std::regex_match(ToLower(answer), std::regex("yes|y"))) {
+    if (std::regex_match(ToLower(CheckAnswer()), std::regex("yes|y"))) {
       result.FillRandomMatrix();
     } else {
       std::cout << "Enter matrix value\n";
@@ -206,6 +200,13 @@ class Console {
     }
     ClearInput();
     return result;
+  }
+
+  std::string CheckAnswer() const {
+    std::cout << "Do you want create random matrix? Enter yes or no\n";
+    std::string answer{};
+    std::cin >> answer;
+    return answer;
   }
 
   void CallAntUsual(const int iterations) {
