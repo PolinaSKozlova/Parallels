@@ -170,24 +170,38 @@ class Console {
     ClearInput();
     if (rows < 1 || cols < 1)
       throw std::invalid_argument("Incorrect matrix size");
-    std::cout << "Enter matrix value\n";
     Matrix result(rows, cols);
-    for (int i = 0; i < rows; ++i) {
-      for (int j = 0; j < cols; ++j) {
-        std::cin >> result.GetMatrix()[i][j];
+    std::cout << "Do you want create random matrix? Enter yes or no\n";
+    std::string answer{};
+    std::cin >> answer;
+    if (std::regex_match(ToLower(answer), std::regex("yes|y"))) {
+      result.FillRandomMatrix();
+    } else {
+      std::cout << "Enter matrix value\n";
+      for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+          std::cin >> result.GetMatrix()[i][j];
+        }
       }
+      ClearInput();
     }
-    ClearInput();
     return result;
   }
 
   Matrix EnterMatrix(int size) {
     if (size < 1) throw std::invalid_argument("Incorrect matrix size");
-    std::cout << "Enter matrix value\n";
+    std::cout << "Do you want create random matrix? Enter yes or no\n";
+    std::string answer{};
+    std::cin >> answer;
     Matrix result(size);
-    for (int i = 0; i < size; ++i) {
-      for (int j = 0; j < size; ++j) {
-        std::cin >> result.GetMatrix()[i][j];
+    if (std::regex_match(ToLower(answer), std::regex("yes|y"))) {
+      result.FillRandomMatrix();
+    } else {
+      std::cout << "Enter matrix value\n";
+      for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+          std::cin >> result.GetMatrix()[i][j];
+        }
       }
     }
     ClearInput();
