@@ -54,25 +54,15 @@ void Gauss::GaussMultiThreadedEliminationStd(std::vector<std::pair<int, int>> al
 };
 
 void Gauss::GaussMultiThreadedElimination(std::vector<std::thread> &threads) {
-
-
-
   int i = 0;
   while(i < gauss_matrix_.GetRows()-1){ 
     int j = i+1;
     while( j < gauss_matrix_.GetRows()) {
    size_t t = 0;
-
     for( ; t < threads.size() &&  j < gauss_matrix_.GetRows(); ++t, ++j) {
-      
     threads.at(t) = std::move(std::thread([&,i, j]() { GaussEliminateElement(i, j); }));
-   
     // std::cout << "thread id " <<t  << " - "<< threads.at(t).get_id() << std::endl;
-
       } 
-
-     
- 
     for (auto& th : threads) {
       if (th.joinable()) th.join();
     }
