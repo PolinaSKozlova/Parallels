@@ -8,6 +8,7 @@
 #include <map>
 #include <regex>
 
+
 #include "../aco/aco.h"
 #include "../gauss/gauss.h"
 #include "../matrix/matrix.h"
@@ -257,7 +258,7 @@ class Console {
       std::cout << "\t\tUsual Winograd Result\n";
       Matrix result;
       result = winograd_.Run(matrix_, matrix_w_, iterations);
-      result.PrintMatrix();
+      result.PrintToFile("Usual Winograd Result.txt");
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -266,8 +267,9 @@ class Console {
   void CallWinogradParallel(const int iterations) {
     try {
       std::cout << "\t\tParallel Winograd Result\n";
-      winograd_.RunParallels(matrix_, matrix_w_, iterations, threads_)
-          .PrintMatrix();
+      Matrix result;
+      result = winograd_.RunParallels(matrix_, matrix_w_, iterations, threads_);
+      result.PrintToFile("Parallel Winograd Result.txt");
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -276,7 +278,9 @@ class Console {
   void CallWinogradPipeline(const int iterations) {
     try {
       std::cout << "\t\tPipeline Winograd Result\n";
-      winograd_.RunPipeline(matrix_, matrix_w_, iterations).PrintMatrix();
+      Matrix result;
+      result = winograd_.RunPipeline(matrix_, matrix_w_, iterations);
+      result.PrintToFile("Pipeline Winograd Result.txt");
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }

@@ -26,19 +26,23 @@ Matrix Winograd::MultiplyMatricesInParallels(unsigned int threads_amount) {
   SetMatrix(wd_.a_, wd_.b_);
   CountRowFactors();
   CountColumnFactors();
+  std::mutex mtx;
 
   std::vector<std::thread> threads((size_t)threads_amount);
   for (unsigned int i = 1; i <= threads_amount; ++i) {
     const int start = (wd_.a_.GetRows() * (i - 1)) / threads_amount;
     const int end = (wd_.a_.GetRows() * i) / threads_amount;
-    threads.at(i - 1) = std::thread([&]() {
+      std::cout << "in for start: " << start << " end: " << end << std::endl;
+    threads.at(i - 1) = std::move(std::thread([&, start, end]() {
       CountResultMatrix(start, end);
-    });
-    for (auto& th : threads) {
+      std::lock_guard<std::mutex> lock(mtx);
+    }));
+    // threads.at(i - 1) = std::move(std::thread(CountResultMatrix, start, end));
+
+  }
+  for (auto& th : threads) {
       if (th.joinable()) th.join();
     }
-  }
-
   return GetResultMatrix();
 }
 
@@ -109,6 +113,7 @@ void Winograd::CountColumnFactors() {
 }
 
 void Winograd::CountResultMatrix(const int start, const int end)  {
+  std::cout << "start: " << start << " end: " << end << std::endl;
   for (int i = start; i < end; ++i) {
     for (int j = 0; j < wd_.b_.GetCols(); ++j) {
       wd_.result_.GetMatrix()[i][j] = - wd_.row_factor_[i] - wd_.column_factor_[j];
@@ -119,6 +124,7 @@ void Winograd::CountResultMatrix(const int start, const int end)  {
       }
     }
   }
+
   if (IsOddMatrix(wd_.a_.GetCols())) {
     CountOddRows(start, end);
   }

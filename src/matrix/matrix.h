@@ -2,6 +2,7 @@
 #define PARALLELS_MATRIX_H
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 namespace Parallels {
@@ -124,6 +125,22 @@ class Matrix {
         std::cout << v[i][j] << " ";
       }
       std::cout << std::endl;
+    }
+  }
+
+  void PrintToFile(const std::string& filename) const noexcept {
+    std::ofstream file(filename);
+     if (file.is_open()) {
+         for (int i = 0; i < rows_; ++i) {
+      for (int j = 0; j < cols_; ++j) {
+        file << matrix_[i][j] << " ";
+      }
+      file << "\n";;
+    }
+        file.close();
+        std::cout << "Result printed to file successfully!" << std::endl;
+    } else {
+        std::cout << "Failed to open file for writing." << std::endl;
     }
   }
 

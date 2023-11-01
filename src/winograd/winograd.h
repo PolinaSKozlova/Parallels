@@ -42,6 +42,7 @@ class Winograd {
   bool CheckSize(const int a_cols, const int b_rows) const noexcept;
   bool IsOddMatrix(const int a_cols) const;
   WinogradData wd_{};
+
 };
 
 class WinogradExecutor {
