@@ -12,9 +12,11 @@ class Gauss {
   Gauss() = default;
 
   std::vector<double> RunUsualGauss(const Matrix& matrix);
-  std::vector<double> RunParallelGauss(const Matrix& matrix, std::vector<std::pair<int, int>> all_rows);
+  std::vector<double> RunParallelGaussStd(const Matrix& matrix, std::vector<std::pair<int, int>> all_rows);
+  std::vector<double> RunParallelGauss(const Matrix& matrix, std::vector<std::thread> &threads);
   void GaussElimination();
-  void GaussMultiThreadedElimination(std::vector<std::pair<int, int>> all_rows);
+  void GaussMultiThreadedEliminationStd(std::vector<std::pair<int, int>> all_rows);
+  void GaussMultiThreadedElimination(std::vector<std::thread> &threads);
   std::vector<double> GaussBackSubstitution();
   void GaussEliminateElement(int lead_row, int target_row);
   void SwapRows(int lead_row);
@@ -41,7 +43,7 @@ class GaussExecutor {
     }
     return result;
   }
-  std::vector<double> RunParallel(const Matrix& matrix, const int iterations) {
+  std::vector<double> RunParallelStd(const Matrix& matrix, const int iterations) {
     Gauss gauss;
     std::vector<double> result;
     std::vector<std::pair<int, int>> all_rows{};
@@ -51,8 +53,24 @@ class GaussExecutor {
       }
     }
     for (int i = 0; i < iterations; ++i) {
-      result = gauss.RunParallelGauss(matrix, all_rows);
+      result = gauss.RunParallelGaussStd(matrix, all_rows);
     }
+
+    return result;
+  }
+
+    std::vector<double> RunParallel(const Matrix& matrix, const int iterations) {
+    Gauss gauss;
+    std::vector<double> result;
+    unsigned  int thread_number{
+    std::min((std::thread::hardware_concurrency() - 1),
+               (unsigned  int)matrix.GetRows())};
+    std::vector<std::thread> threads(thread_number);
+    for (int i = 0; i < iterations; ++i) {
+      result = gauss.RunParallelGauss(matrix,threads);
+    }
+
+    
     return result;
   }
 };

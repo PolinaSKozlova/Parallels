@@ -108,6 +108,10 @@ class Console {
             [this, iterations](int) { CallGaussParallel(iterations); },
             iterations);
         ShowTime("Time parallel Gauss: ");
+        time_ = CountTime(
+            [this, iterations](int) { CallGaussParallelStd(iterations); },
+            iterations);
+        ShowTime("Time parallel Gauss Std: ");
       } catch (std::exception& e) {
         std::cout << "=============================================\n";
         std::cout << e.what() << std::endl;
@@ -248,6 +252,17 @@ class Console {
     try {
       std::cout << "\t\tParallel Gauss Result\n";
       PrintResultVector(gauss_.RunParallel(matrix_, iterations));
+      std::cout << "\t\tParallel Gauss Result Std\n";
+      PrintResultVector(gauss_.RunParallelStd(matrix_, iterations));
+    } catch (std::invalid_argument& e) {
+      std::cout << e.what() << std::endl;
+    }
+  }
+
+    void CallGaussParallelStd(const int iterations) {
+    try {
+      std::cout << "\t\tParallel Gauss Result Std\n";
+      PrintResultVector(gauss_.RunParallelStd(matrix_, iterations));
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }

@@ -20,18 +20,29 @@ std::vector<double> Gauss::RunUsualGauss(const Matrix& matrix) {
   return result;
 }
 
-std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix,std::vector<std::pair<int, int>> all_rows) {
+std::vector<double> Gauss::RunParallelGaussStd(const Matrix& matrix,std::vector<std::pair<int, int>> all_rows) {
   if (matrix.CheckZeroRow() || matrix.CheckZeroCol() ||
       !HasOneSolution(matrix)) {
     throw std::invalid_argument("There is no solution!");
   }
   gauss_matrix_ = matrix;
-  GaussMultiThreadedElimination(all_rows);
+  GaussMultiThreadedEliminationStd(all_rows);
+  return GaussBackSubstitution();
+}
+
+std::vector<double> Gauss::RunParallelGauss(const Matrix& matrix, std::vector<std::thread> &threads) {
+  if (matrix.CheckZeroRow() || matrix.CheckZeroCol() ||
+      !HasOneSolution(matrix)) {
+    throw std::invalid_argument("There is no solution!");
+  }
+  gauss_matrix_ = matrix;
+
+  GaussMultiThreadedElimination(threads);
   return GaussBackSubstitution();
 }
 
 
-void Gauss::GaussMultiThreadedElimination(std::vector<std::pair<int, int>> all_rows) {
+void Gauss::GaussMultiThreadedEliminationStd(std::vector<std::pair<int, int>> all_rows) {
 
   std::for_each(std::execution::par_unseq, all_rows.begin(), all_rows.end(),
                 [&](std::pair<int, int> row) {
@@ -40,6 +51,34 @@ void Gauss::GaussMultiThreadedElimination(std::vector<std::pair<int, int>> all_r
                   GaussEliminateElement(i, j);
                 });
 
+};
+
+void Gauss::GaussMultiThreadedElimination(std::vector<std::thread> &threads) {
+
+
+
+  int i = 0;
+  while(i < gauss_matrix_.GetRows()-1){ 
+    int j = i+1;
+    while( j < gauss_matrix_.GetRows()) {
+   size_t t = 0;
+
+    for( ; t < threads.size() &&  j < gauss_matrix_.GetRows(); ++t, ++j) {
+      
+    threads.at(t) = std::move(std::thread([&,i, j]() { GaussEliminateElement(i, j); }));
+   
+    // std::cout << "thread id " <<t  << " - "<< threads.at(t).get_id() << std::endl;
+
+      } 
+
+     
+ 
+    for (auto& th : threads) {
+      if (th.joinable()) th.join();
+    }
+  }
+  ++i;
+  }
 };
 
 void Gauss::GaussElimination() {
@@ -65,7 +104,7 @@ std::vector<double> Gauss::GaussBackSubstitution() {
 };
 
 void Gauss::GaussEliminateElement(int lead_row, int target_row) {
-  mutex_.lock();
+  // mutex_.lock();
   if (gauss_matrix_.GetMatrix()[lead_row][lead_row] == 0) {
     SwapRows(lead_row);
   }
@@ -81,7 +120,7 @@ void Gauss::GaussEliminateElement(int lead_row, int target_row) {
       }
     }
   }
-  mutex_.unlock();
+  // mutex_.unlock();
 };
 
 bool Gauss::CheckNull(const std::vector<double>& row, int end) {
