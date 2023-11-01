@@ -144,7 +144,7 @@ class Console {
         time_ = CountTime(
             [this, iterations](int) { CallWinogradPipeline(iterations); },
             iterations);
-        ShowTime("Time Convyer Winograd: ");
+        ShowTime("Time pipeline Winograd: ");
       } catch (std::invalid_argument& e) {
         std::cout << "=============================================\n";
         std::cout << e.what() << std::endl;
@@ -290,7 +290,9 @@ class Console {
     const auto start{std::chrono::system_clock::now()};
     f(iterations);
     const auto finish{std::chrono::system_clock::now()};
-    return std::chrono::duration<double>(finish - start).count();
+   return std::chrono::duration_cast<std::chrono::milliseconds>(finish - start)
+        .count();
+
   }
 
   void ClearInput() const {
@@ -306,8 +308,7 @@ class Console {
 
   void ShowTime(const std::string& message) const {
     std::cout << "\n=============================================\n";
-    std::cout << message << std::fixed << std::setprecision(6) << time_
-              << std::defaultfloat << "\n";
+    std::cout << message <<  time_ << " ms \n";
     std::cout << "\n=============================================\n";
   }
 

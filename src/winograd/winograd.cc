@@ -32,7 +32,6 @@ Matrix Winograd::MultiplyMatricesInParallels(unsigned int threads_amount) {
   for (unsigned int i = 1; i <= threads_amount; ++i) {
     const int start = (wd_.a_.GetRows() * (i - 1)) / threads_amount;
     const int end = (wd_.a_.GetRows() * i) / threads_amount;
-      std::cout << "in for start: " << start << " end: " << end << std::endl;
     threads.at(i - 1) = std::move(std::thread([&, start, end]() {
       CountResultMatrix(start, end);
       std::lock_guard<std::mutex> lock(mtx);
@@ -113,7 +112,6 @@ void Winograd::CountColumnFactors() {
 }
 
 void Winograd::CountResultMatrix(const int start, const int end)  {
-  std::cout << "start: " << start << " end: " << end << std::endl;
   for (int i = start; i < end; ++i) {
     for (int j = 0; j < wd_.b_.GetCols(); ++j) {
       wd_.result_.GetMatrix()[i][j] = - wd_.row_factor_[i] - wd_.column_factor_[j];
