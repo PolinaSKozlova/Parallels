@@ -3,11 +3,9 @@
 
 #include <chrono>
 #include <functional>
-#include <iomanip>
 #include <iostream>
 #include <map>
 #include <regex>
-
 
 #include "../aco/aco.h"
 #include "../gauss/gauss.h"
@@ -179,9 +177,15 @@ class Console {
       result.FillRandomMatrix();
     } else {
       std::cout << "Enter matrix value\n";
+      double value{};
       for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-          std::cin >> result.GetMatrix()[i][j];
+          if (std::cin >> value) {
+            result.GetMatrix()[i][j] = value;
+          } else {
+            ClearInput();
+            throw std::invalid_argument("Incorrect matrix value");
+          }
         }
       }
       ClearInput();
@@ -196,9 +200,15 @@ class Console {
       result.FillRandomMatrix();
     } else {
       std::cout << "Enter matrix value\n";
+      double value{};
       for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
-          std::cin >> result.GetMatrix()[i][j];
+          if (std::cin >> value) {
+            result.GetMatrix()[i][j] = value;
+          } else {
+            ClearInput();
+            throw std::invalid_argument("Incorrect matrix value");
+          }
         }
       }
     }
@@ -242,7 +252,8 @@ class Console {
   void CallGaussUsual(const int iterations) {
     try {
       std::cout << "\t\tUsual Gauss Result\n";
-      PrintResultVectorToFile(gauss_.Run(matrix_, iterations), "Usual Gauss Result.txt");
+      PrintResultVectorToFile(gauss_.Run(matrix_, iterations),
+                              "Usual Gauss Result.txt");
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -251,16 +262,18 @@ class Console {
   void CallGaussParallel(const int iterations) {
     try {
       std::cout << "\t\tParallel Gauss Result\n";
-      PrintResultVectorToFile(gauss_.RunParallel(matrix_, iterations), "Parallel Gauss Result.txt");
+      PrintResultVectorToFile(gauss_.RunParallel(matrix_, iterations),
+                              "Parallel Gauss Result.txt");
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
   }
 
-    void CallGaussParallelStd(const int iterations) {
+  void CallGaussParallelStd(const int iterations) {
     try {
       std::cout << "\t\tParallel Gauss Result Std\n";
-      PrintResultVectorToFile(gauss_.RunParallelStd(matrix_, iterations), "Parallel Gauss Std Result.txt");
+      PrintResultVectorToFile(gauss_.RunParallelStd(matrix_, iterations),
+                              "Parallel Gauss Std Result.txt");
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -303,9 +316,8 @@ class Console {
     const auto start{std::chrono::system_clock::now()};
     f(iterations);
     const auto finish{std::chrono::system_clock::now()};
-   return std::chrono::duration_cast<std::chrono::milliseconds>(finish - start)
+    return std::chrono::duration_cast<std::chrono::milliseconds>(finish - start)
         .count();
-
   }
 
   void ClearInput() const {
@@ -321,7 +333,7 @@ class Console {
 
   void ShowTime(const std::string& message) const {
     std::cout << "\n=============================================\n";
-    std::cout << message <<  time_ << " ms \n";
+    std::cout << message << time_ << " ms \n";
     std::cout << "\n=============================================\n";
   }
 
@@ -339,14 +351,15 @@ class Console {
     std::cout << std::endl;
   }
 
-    void PrintResultVectorToFile(const std::vector<double>& v, const std::string& filename) const {
+  void PrintResultVectorToFile(const std::vector<double>& v,
+                               const std::string& filename) const {
     std::ofstream file(filename);
     if (file.is_open()) {
-      int i =0;
-        for (auto value : v) {
-          file << "x" << ++i << " = " << value << "\n";
-        }
-        file.close();
+      int i = 0;
+      for (auto value : v) {
+        file << "x" << ++i << " = " << value << "\n";
+      }
+      file.close();
     }
   }
 
