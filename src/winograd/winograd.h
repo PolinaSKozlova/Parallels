@@ -41,20 +41,15 @@ class Winograd {
   void SetMatrix(const Matrix& a, const Matrix& b);
   void CountRowFactors();
   void CountColumnFactors();
-  void CountBothFactors();
   void CountResultMatrix(const int start, const int end);
-  void CountResultMatrix(const int i, const int j,
-                         std::pair<double, double> factors);
   void CountOddRows(const int start, const int end) const;
   bool CheckSize(const int a_cols, const int b_rows) const noexcept;
   bool IsOddMatrix(const int a_cols) const;
   WinogradData wd_{};
-  std::queue<int> task_queue_;  // Очередь задач. Здесь будут храниться индексы
-                                // строк для обработки.
-  std::mutex
-      queue_mutex_;  // Мьютекс для синхронизации доступа к очереди задач.
-  std::condition_variable cv_;  // Переменная условия для синхронизации потоков.
-  bool done_;  // Флаг, указывающий на завершение вычислений.
+  std::queue<int> task_queue_;
+  std::mutex queue_mutex_;
+  std::condition_variable cv_;
+  bool done_;
 };
 
 class WinogradExecutor {

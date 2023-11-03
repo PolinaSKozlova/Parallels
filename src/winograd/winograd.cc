@@ -36,68 +36,12 @@ Matrix Winograd::MultiplyMatricesInParallels(unsigned int threads_amount) {
       CountResultMatrix(start, end);
       std::lock_guard<std::mutex> lock(mtx);
     }));
-    // threads.at(i - 1) = std::move(std::thread(CountResultMatrix, start,
-    // end));
   }
   for (auto& th : threads) {
     if (th.joinable()) th.join();
   }
   return GetResultMatrix();
 }
-
-// Matrix Winograd::MultiplyMatricesInPipeline() {
-//   if (!CheckSize(wd_.a_.GetCols(), wd_.b_.GetRows()))
-//     throw std::invalid_argument("Matrices are not compatible!");
-//   SetMatrix(wd_.a_, wd_.b_);
-//   std::packaged_task<void()> count_row_factor(
-//       std::bind(&Winograd::CountRowFactors, this));
-//   std::packaged_task<void()> count_column_factor(
-//       std::bind(&Winograd::CountColumnFactors, this));
-
-//   std::future<void> row_future = count_row_factor.get_future();
-//   std::future<void> column_future = count_column_factor.get_future();
-
-//   std::thread row_thread(std::move(count_row_factor));
-//   std::thread column_thread(std::move(count_column_factor));
-
-//   row_future.wait();
-//   column_future.wait();
-
-//   // std::vector<double> row_factor = row_future.get();
-//   // std::vector<double> column_factor = column_future.get();
-
-//   row_thread.join();
-//   column_thread.join();
-
-//   std::thread result_thread(
-//       [&]() { CountResultMatrix(0, wd_.result_.GetRows()); });
-
-//   result_thread.join();
-
-//   return GetResultMatrix();
-// }
-
-// Matrix Winograd::MultiplyMatricesInPipeline() {
-//   if (!CheckSize(wd_.a_.GetCols(), wd_.b_.GetRows()))
-//     throw std::invalid_argument("Matrices are not compatible!");
-//   SetMatrix(wd_.a_, wd_.b_);
-
-//   std::packaged_task<void()> task([&]() {
-//     CountRowFactors();
-//     CountColumnFactors();
-//   });
-
-//   std::future<void> task_future = task.get_future();
-//   std::thread work_thread(std::move(task));
-
-//   work_thread.join();
-
-//   std::thread main_thread([&]() { CountResultMatrix(0, wd_.a_.GetRows()); });
-
-//   main_thread.join();
-
-//   return GetResultMatrix();
-// }
 
 Matrix Winograd::MultiplyMatricesInPipeline() {
   if (!CheckSize(wd_.a_.GetCols(), wd_.b_.GetRows()))
