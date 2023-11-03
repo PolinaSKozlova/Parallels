@@ -1,8 +1,9 @@
 #ifndef PARALLELS_MATRIX_H
 #define PARALLELS_MATRIX_H
 
-#include <iostream>
 #include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <vector>
 
 namespace Parallels {
@@ -130,17 +131,18 @@ class Matrix {
 
   void PrintToFile(const std::string& filename) const noexcept {
     std::ofstream file(filename);
-     if (file.is_open()) {
-         for (int i = 0; i < rows_; ++i) {
-      for (int j = 0; j < cols_; ++j) {
-        file << matrix_[i][j] << " ";
+    if (file.is_open()) {
+      for (int i = 0; i < rows_; ++i) {
+        for (int j = 0; j < cols_; ++j) {
+          file << std::fixed << std::setprecision(2) << matrix_[i][j] << " ";
+        }
+        file << "\n";
+        ;
       }
-      file << "\n";;
-    }
-        file.close();
-        std::cout << "Result printed to file successfully!" << std::endl;
+      file.close();
+      std::cout << "Result printed to file successfully!" << std::endl;
     } else {
-        std::cout << "Failed to open file for writing." << std::endl;
+      std::cout << "Failed to open file for writing." << std::endl;
     }
   }
 
