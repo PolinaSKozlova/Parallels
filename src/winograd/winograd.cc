@@ -6,12 +6,6 @@
 
 namespace Parallels {
 Matrix Winograd::MultiplyMatrices() {
-  if (!CheckSize(wd_.a_.GetCols(), wd_.b_.GetRows()))
-    throw std::invalid_argument("Matrices are not compatible!");
-  if (wd_.b_.GetRows() == 1)
-    throw std::invalid_argument(
-        "Algorithm does not support one row or one column matrices!");
-  SetMatrix(wd_.a_, wd_.b_);
   CountRowFactors();
   CountColumnFactors();
 
@@ -21,9 +15,6 @@ Matrix Winograd::MultiplyMatrices() {
 }
 
 Matrix Winograd::MultiplyMatricesInParallels(unsigned int threads_amount) {
-  if (!CheckSize(wd_.a_.GetCols(), wd_.b_.GetRows()))
-    throw std::invalid_argument("Matrices are not compatible!");
-  SetMatrix(wd_.a_, wd_.b_);
   CountRowFactors();
   CountColumnFactors();
   std::mutex mtx;
@@ -44,10 +35,6 @@ Matrix Winograd::MultiplyMatricesInParallels(unsigned int threads_amount) {
 }
 
 Matrix Winograd::MultiplyMatricesInPipeline() {
-  if (!CheckSize(wd_.a_.GetCols(), wd_.b_.GetRows()))
-    throw std::invalid_argument("Matrices are not compatible!");
-  SetMatrix(wd_.a_, wd_.b_);
-
   auto factors = [&]() {
     CountRowFactors();
     CountColumnFactors();
@@ -133,7 +120,7 @@ void Winograd::CountResultMatrix(const int start, const int end) {
   }
 }
 
-void Winograd::CountOddRows(const int start, const int end) const {
+void Winograd::CountOddRows(const int start, const int end) {
   for (int i = start; i < end; ++i) {
     for (int j = 0; j < wd_.b_.GetCols(); ++j) {
       wd_.result_.GetMatrix()[i][j] +=
