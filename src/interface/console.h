@@ -242,7 +242,7 @@ class Console {
   void CallGaussUsual(const int iterations) {
     try {
       std::cout << "\t\tUsual Gauss Result\n";
-      PrintResultVector(gauss_.Run(matrix_, iterations));
+      PrintResultVectorToFile(gauss_.Run(matrix_, iterations), "Usual Gauss Result.txt");
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -251,7 +251,7 @@ class Console {
   void CallGaussParallel(const int iterations) {
     try {
       std::cout << "\t\tParallel Gauss Result\n";
-      PrintResultVector(gauss_.RunParallel(matrix_, iterations));
+      PrintResultVectorToFile(gauss_.RunParallel(matrix_, iterations), "Parallel Gauss Result.txt");
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -260,7 +260,7 @@ class Console {
     void CallGaussParallelStd(const int iterations) {
     try {
       std::cout << "\t\tParallel Gauss Result Std\n";
-      PrintResultVector(gauss_.RunParallelStd(matrix_, iterations));
+      PrintResultVectorToFile(gauss_.RunParallelStd(matrix_, iterations), "Parallel Gauss Std Result.txt");
     } catch (std::invalid_argument& e) {
       std::cout << e.what() << std::endl;
     }
@@ -337,6 +337,17 @@ class Console {
       std::cout << value << " ";
     }
     std::cout << std::endl;
+  }
+
+    void PrintResultVectorToFile(const std::vector<double>& v, const std::string& filename) const {
+    std::ofstream file(filename);
+    if (file.is_open()) {
+      int i =0;
+        for (auto value : v) {
+          file << "x" << ++i << " = " << value << "\n";
+        }
+        file.close();
+    }
   }
 
   AcoExecutor aco_ex_;
