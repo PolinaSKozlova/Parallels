@@ -1,7 +1,6 @@
 #ifndef PARALLELS_GAUSS_H
 #define PARALLELS_GAUSS_H
 
-#include <mutex>
 #include <vector>
 
 #include "../matrix/matrix.h"
@@ -10,23 +9,24 @@ namespace Parallels {
 class Gauss {
  public:
   Gauss() = default;
-
+  Gauss(std::shared_ptr<Matrix> gauss_matrix) { gauss_matrix_ = gauss_matrix; }
   std::vector<double> RunUsualGauss(const Matrix& matrix);
-  std::vector<double> RunParallelGauss(const Matrix& matrix, std::vector<std::pair<int, int>> all_rows);
+  std::vector<double> RunParallelGaussStd(const Matrix& matrix, std::vector<std::pair<int, int>> all_rows);
+  std::vector<double> RunParallelGauss(const Matrix& matrix, std::vector<std::thread> &threads, unsigned int thread_number);
   void GaussElimination();
-  void GaussMultiThreadedElimination(std::vector<std::pair<int, int>> all_rows);
+  void GaussMultiThreadedEliminationStd(std::vector<std::pair<int, int>> all_rows);
+  void GaussMultiThreadedElimination(std::vector<std::thread> &threads, unsigned int thread_number);
   std::vector<double> GaussBackSubstitution();
   void GaussEliminateElement(int lead_row, int target_row);
   void SwapRows(int lead_row);
 
-  VVDouble& GetGaussMatrix() { return gauss_matrix_.GetMatrix(); }
+  VVDouble& GetGaussMatrix() { return gauss_matrix_->GetMatrix(); }
 
  private:
   bool CheckNull(const std::vector<double>& row, int end);
   bool HasOneSolution(const Matrix& matrix);
   const double kEpsilon = 1e-9;
-  Matrix gauss_matrix_;
-  std::mutex mutex_;
+  std::shared_ptr<Matrix> gauss_matrix_;
 };
 
 class GaussExecutor {
@@ -34,15 +34,15 @@ class GaussExecutor {
   GaussExecutor() = default;
   ~GaussExecutor() = default;
   std::vector<double> Run(const Matrix& matrix, const int iterations) {
-    Gauss gauss;
+    Gauss gauss(std::make_shared<Matrix>(matrix));
     std::vector<double> result;
     for (int i = 0; i < iterations; ++i) {
       result = gauss.RunUsualGauss(matrix);
     }
     return result;
   }
-  std::vector<double> RunParallel(const Matrix& matrix, const int iterations) {
-    Gauss gauss;
+  std::vector<double> RunParallelStd(const Matrix& matrix, const int iterations) {
+    Gauss gauss(std::make_shared<Matrix>(matrix));
     std::vector<double> result;
     std::vector<std::pair<int, int>> all_rows{};
     for (int i = 0; i < matrix.GetRows() - 1; ++i) {
@@ -51,8 +51,24 @@ class GaussExecutor {
       }
     }
     for (int i = 0; i < iterations; ++i) {
-      result = gauss.RunParallelGauss(matrix, all_rows);
+      result = gauss.RunParallelGaussStd(matrix, all_rows);
     }
+
+    return result;
+  }
+
+    std::vector<double> RunParallel(const Matrix& matrix, const int iterations) {
+    Gauss gauss(std::make_shared<Matrix>(matrix));
+    std::vector<double> result;
+    unsigned  int thread_number{
+    std::min((std::thread::hardware_concurrency() - 1),
+               (unsigned  int)matrix.GetRows())};
+    std::vector<std::thread> threads;
+    for (int i = 0; i < iterations; ++i) {
+      result = gauss.RunParallelGauss(matrix,threads,thread_number);
+    }
+
+    
     return result;
   }
 };
