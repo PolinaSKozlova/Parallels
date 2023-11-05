@@ -17,7 +17,7 @@ struct WinogradData {
   Matrix result_;
   std::vector<double> row_factor_;
   std::vector<double> column_factor_;
-  int half_size_;
+  int half_size_{};
 };
 
 class Winograd {
@@ -52,7 +52,7 @@ class Winograd {
   std::queue<int> task_queue_;
   std::mutex queue_mutex_;
   std::condition_variable cv_;
-  bool done_;
+  bool done_{};
 };
 
 class WinogradExecutor {
