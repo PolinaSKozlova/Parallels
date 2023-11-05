@@ -32,7 +32,7 @@ winograd:
 
 
 clean:
-	rm -rf *.o *.a run *.dSYM *.d app *Result.txt
+	rm -rf *.o *.a run *.dSYM *.d app *Result.txt *Generated.txt
 
 
 .PHONY:

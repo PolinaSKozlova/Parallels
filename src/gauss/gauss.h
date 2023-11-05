@@ -10,7 +10,7 @@ namespace Parallels {
 class Gauss {
  public:
   Gauss() = default;
-  Gauss(std::shared_ptr<Matrix> gauss_matrix) { gauss_matrix_ = gauss_matrix; }
+  explicit Gauss(std::shared_ptr<Matrix> gauss_matrix): gauss_matrix_(gauss_matrix) {}
   std::vector<double> RunUsualGauss(const Matrix& matrix);
   std::vector<double> RunParallelGaussStd(
       const Matrix& matrix, std::vector<std::pair<int, int>> all_rows);

@@ -21,7 +21,7 @@ std::vector<double> Gauss::RunUsualGauss(const Matrix& matrix) {
 }
 
 std::vector<double> Gauss::RunParallelGaussStd(
-    const Matrix& matrix, std::vector<std::pair<int, int>> all_rows) {
+    const Matrix& matrix, std::vector<std::pair<int, int>> const all_rows) {
   if (matrix.CheckZeroRow() || matrix.CheckZeroCol() ||
       !HasOneSolution(matrix)) {
     throw std::invalid_argument("There is no solution!");

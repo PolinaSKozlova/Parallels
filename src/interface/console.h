@@ -68,7 +68,8 @@ class Console {
         int size{};
         std::cin >> size;
         ClearInput();
-        matrix_ = EnterMatrix(size);
+        matrix_ = EnterMatrix(size, true);
+        matrix_.PrintToFile("AntMatrixGenerated.txt");
         std::cout << "\n=============================================\n";
         int iterations = GetIterations();
         time_ = CountTime([this, iterations](int) { CallAntUsual(iterations); },
@@ -96,6 +97,7 @@ class Console {
       try {
         std::cout << "Enter matrix size(rows and cols)\n";
         matrix_ = EnterMatrix();
+        matrix_.PrintToFile("GaussMatrixGenerated.txt");
         std::cout << "\n=============================================\n";
         int iterations = GetIterations();
         time_ =
@@ -128,8 +130,10 @@ class Console {
       try {
         std::cout << "\nEnter matrix A size(rows and cols)\n";
         matrix_ = EnterMatrix();
+        matrix_.PrintToFile("WinogradMatrixAGenerated.txt");
         std::cout << "\nEnter matrix B size(rows and cols)\n";
         matrix_w_ = EnterMatrix();
+        matrix_w_.PrintToFile("WinogradMatrixBGenerated.txt");
         std::cout << "\n=============================================\n";
         int iterations = GetIterations();
         std::cout << "\nEnter amount of threads\n";
@@ -166,7 +170,7 @@ class Console {
     return iterations;
   }
 
-  Matrix EnterMatrix() {
+  Matrix EnterMatrix(bool graph = false) {
     int rows{}, cols{};
     std::cin >> rows >> cols;
     ClearInput();
@@ -174,7 +178,11 @@ class Console {
       throw std::invalid_argument("Incorrect matrix size");
     Matrix result(rows, cols);
     if (std::regex_match(ToLower(CheckAnswer()), std::regex("yes|y"))) {
-      result.FillRandomMatrix();
+      if (graph) {
+        result.FillRandomMatrixGraph();
+      } else {
+        result.FillRandomMatrix();
+      }
     } else {
       std::cout << "Enter matrix value\n";
       double value{};
@@ -193,11 +201,15 @@ class Console {
     return result;
   }
 
-  Matrix EnterMatrix(int size) {
+  Matrix EnterMatrix(int size, bool graph = false) {
     if (size < 1) throw std::invalid_argument("Incorrect matrix size");
     Matrix result(size);
     if (std::regex_match(ToLower(CheckAnswer()), std::regex("yes|y"))) {
-      result.FillRandomMatrix();
+      if (graph) {
+        result.FillRandomMatrixGraph();
+      } else {
+        result.FillRandomMatrix();
+      }
     } else {
       std::cout << "Enter matrix value\n";
       double value{};

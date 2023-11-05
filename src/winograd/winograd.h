@@ -11,7 +11,7 @@ namespace Parallels {
 
 struct WinogradData {
   WinogradData() = default;
-  WinogradData(const Matrix& a, const Matrix& b) : a_(a), b_(b) {}
+  WinogradData(const Matrix& a, const Matrix& b) : a_(a), b_(b), half_size_(a_.GetCols() / 2) {}
   Matrix a_;
   Matrix b_;
   Matrix result_;
@@ -23,7 +23,7 @@ struct WinogradData {
 class Winograd {
  public:
   Winograd() = default;
-  explicit Winograd(const Matrix& a, const Matrix& b) : wd_{a, b} {
+  explicit Winograd(const Matrix& a, const Matrix& b) : wd_{a, b}, done_(false) {
     if (!CheckSize(wd_.a_.GetCols(), wd_.b_.GetRows())) {
       throw std::invalid_argument("Matrices are not compatible!");
     }

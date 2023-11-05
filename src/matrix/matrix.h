@@ -154,6 +154,18 @@ class Matrix {
     }
   }
 
+  void FillRandomMatrixGraph() {
+    for (int i = 0; i < rows_; ++i) {
+      for (int j = 0; j < cols_; ++j) {
+        if (i == j) {
+          matrix_[i][j] = 0;
+        } else {
+          matrix_[i][j] = rand() % 100 + 1;
+        }
+      }
+    }
+  }
+
  private:
   VVDouble matrix_;
   int rows_{};
